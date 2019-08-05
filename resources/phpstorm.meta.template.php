@@ -4,11 +4,11 @@ namespace PHPSTORM_META {
     override(
         <?php echo $overrideEntry->getTarget();?>,
         map(
-            [
-                <?php foreach ($overrideEntry->getMap() as $key => $value) : ?>
-                '<?php echo $key;?>', => '<?php echo $value;?>'
-                <?php endforeach; ?>
-            ]
+            array(
+        <?php foreach ($overrideEntry->getMap() as $key => $value) : ?>
+        '<?php echo $key;?>' => '<?php echo $value;?>',
+        <?php endforeach; ?>
+    )
         )
     );
 <?php endforeach; ?>
