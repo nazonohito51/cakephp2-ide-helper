@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+if ($argc < 2) {
+    throw new InvalidArgumentException('cakephp2 app dir required.');
+}
+
+$appDir = $argv[1];
+$rootDir = isset($argv[2]) ? $argv[2] : __DIR__ . '/../../';
+
+$generator = new \CakePhp2IdeHelper\Generator(realpath($rootDir), $appDir);
+
+$generator->generate();
