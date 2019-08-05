@@ -26,7 +26,7 @@ class CakePhp2App extends CakePhp2Dir
     public function getPluginDirs()
     {
         $ret = array();
-        foreach (glob($this->appDir . '/Plugin') as $pluginPath) {
+        foreach (glob($this->appDir . '/Plugin/*', GLOB_ONLYDIR) as $pluginPath) {
             $pluginDir = new \SplFileInfo($pluginPath);
             if ($pluginDir->isDir()) {
                 $ret[] = new CakePhp2Plugin($pluginDir->getRealPath(), $pluginDir->getFilename());

@@ -29,8 +29,8 @@ abstract class CakePhp2Dir
      */
     public function __construct($appDir)
     {
-        if (!is_dir($appDir)) {
-            throw new \InvalidArgumentException();
+        if (!is_dir($appDir = realpath($appDir))) {
+            throw new \InvalidArgumentException('app dir is invalid: ' . $appDir);
         }
 
         $this->appDir = $appDir;
@@ -65,7 +65,11 @@ abstract class CakePhp2Dir
     {
         $ret = array();
         foreach ($this->modelDirs as $modelDir) {
-            $ret = array_merge($ret, glob($modelDir));
+            foreach (glob($modelDir . '/*') as $path) {
+                if (is_file($path)) {
+                    $ret[] = $path;
+                }
+            }
         }
 
         return $ret;
