@@ -4,11 +4,11 @@ namespace CakePhp2IdeHelper;
 
 class Generator
 {
-    private $app;
+    private $analyzer;
 
     public function __construct($appDir)
     {
-        $this->app = new CakePhp2App($appDir);
+        $this->analyzer = new Analyzer(new CakePhp2App($appDir));
     }
 
     public function generate()
@@ -21,7 +21,7 @@ class Generator
     public function generatePhpStormMetaFileContent()
     {
         $overrideEntry = new OverRideEntry('\\ClassRegistry::init(0)');
-        foreach ($this->app->getModelReaders() as $modelReader) {
+        foreach ($this->analyzer->getModelReaders() as $modelReader) {
             $overrideEntry->add($modelReader->getSymbol(), $modelReader->getModelName());
         }
 

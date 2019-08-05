@@ -16,6 +16,7 @@
             "CakePhp2IdeHelper\\": "src/"
         }
     },
+    "bin": ["bin/generate-ide-helper"],
     "config": {
         "platform": {
             "php": "5.3.3"
