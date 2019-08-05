@@ -76,7 +76,7 @@ abstract class CakePhp2Dir
      */
     public function getModelReaders()
     {
-        $modelReaders = [];
+        $modelReaders = array();
         foreach ($this->getModelFiles() as $modelFile) {
             $modelReaders[] = new ModelReader($modelFile);
         }
