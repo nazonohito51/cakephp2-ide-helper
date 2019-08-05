@@ -1,0 +1,24 @@
+{
+    "name": "nazonohito51/cakephp2-ide-helper",
+    "description": "Improve auto-completion for cakephp2",
+    "type": "library",
+    "authors": [
+        {
+            "name": "nazonohito51",
+            "email": "nazonohito51@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "CakePhp2IdeHelper\\": "src/"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "5.3.3"
+        }
+    }
+}
