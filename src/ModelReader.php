@@ -7,7 +7,7 @@ class ModelReader
     private $file;
     private $pluginName;
 
-    public function __construct($path, $pluginName = '')
+    public function __construct(string $path, string $pluginName = '')
     {
         if (!is_file($path)) {
             throw new \InvalidArgumentException('invalid model path: ' . $path);
@@ -17,34 +17,22 @@ class ModelReader
         $this->pluginName = $pluginName;
     }
 
-    /**
-     * @return string
-     */
-    public function getModelName()
+    public function getModelName(): string
     {
         return preg_replace('/\.php$/', '', $this->file->getFilename());
     }
 
-    /**
-     * @return bool
-     */
-    public function isPlugin()
+    public function isPlugin(): bool
     {
         return !empty($this->pluginName);
     }
 
-    /**
-     * @return string
-     */
-    public function getPluginName()
+    public function getPluginName(): string
     {
         return $this->pluginName;
     }
 
-    /**
-     * @return string
-     */
-    public function getSymbol()
+    public function getSymbol(): string
     {
         if ($this->isPlugin()) {
             return "{$this->getPluginName()}.{$this->getModelName()}";

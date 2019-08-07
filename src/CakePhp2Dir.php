@@ -4,30 +4,16 @@ namespace CakePhp2IdeHelper;
 
 abstract class CakePhp2Dir
 {
-    /**
-     * @return bool
-     */
-    abstract public function isPlugin();
-
-    /**
-     * @return string|null
-     */
-    abstract public function getPluginName();
-
-    /**
-     * @var string
-     */
+    abstract public function isPlugin(): bool;
+    abstract public function getPluginName(): ?string;
     protected $appDir;
 
     /**
      * @var string[]
      */
-    protected $modelDirs = array();
+    protected $modelDirs = [];
 
-    /**
-     * @param string $appDir
-     */
-    public function __construct($appDir)
+    public function __construct(string $appDir)
     {
         if (!is_dir($appDir = realpath($appDir))) {
             throw new \InvalidArgumentException('app dir is invalid: ' . $appDir);
@@ -38,18 +24,12 @@ abstract class CakePhp2Dir
         $this->modelDirs[] = $this->getModelDirPath();
     }
 
-    /**
-     * @return string
-     */
-    public function getModelDirPath()
+    public function getModelDirPath(): string
     {
         return $this->appDir . '/Model';
     }
 
-    /**
-     * @param string $modelDir
-     */
-    public function addModelDir($modelDir)
+    public function addModelDir(string $modelDir): void
     {
         if (!is_dir($modelDir)) {
             throw new \InvalidArgumentException();
@@ -61,7 +41,7 @@ abstract class CakePhp2Dir
     /**
      * @return string[]
      */
-    public function getModelFiles()
+    public function getModelFiles(): array
     {
         $ret = array();
         foreach ($this->modelDirs as $modelDir) {
@@ -78,7 +58,7 @@ abstract class CakePhp2Dir
     /**
      * @return ModelReader[]
      */
-    public function getModelReaders()
+    public function getModelReaders(): array
     {
         $modelReaders = array();
         foreach ($this->getModelFiles() as $modelFile) {

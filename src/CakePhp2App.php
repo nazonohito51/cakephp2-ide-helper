@@ -7,7 +7,7 @@ class CakePhp2App extends CakePhp2Dir
     /**
      * @inheritDoc
      */
-    public function isPlugin()
+    public function isPlugin(): bool
     {
         return false;
     }
@@ -15,17 +15,17 @@ class CakePhp2App extends CakePhp2Dir
     /**
      * @inheritDoc
      */
-    public function getPluginName()
+    public function getPluginName(): ?string
     {
-        return false;
+        return null;
     }
 
     /**
      * @return CakePhp2Plugin[]
      */
-    public function getPluginDirs()
+    public function getPluginDirs(): array
     {
-        $ret = array();
+        $ret = [];
         foreach (glob($this->appDir . '/Plugin/*', GLOB_ONLYDIR) as $pluginPath) {
             $pluginDir = new \SplFileInfo($pluginPath);
             if ($pluginDir->isDir()) {

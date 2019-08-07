@@ -15,7 +15,7 @@ class Ast
     private $path;
     private $stmts;
 
-    public function __construct($path)
+    public function __construct(string $path)
     {
         $this->path = $path;
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);

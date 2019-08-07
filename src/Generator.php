@@ -7,22 +7,22 @@ class Generator
     private $rootDir;
     private $analyzer;
 
-    public function __construct($rootDir, $appDir)
+    public function __construct(string $rootDir, string $appDir)
     {
         $this->analyzer = new Analyzer(new CakePhp2App($appDir));
         $this->rootDir = $rootDir;
     }
 
-    public function generate()
+    public function generate(): void
     {
         $phpstormMetaFile = new \SplFileObject($this->rootDir . '/.phpstorm.meta.php', 'w');
 
         $phpstormMetaFile->fwrite($this->generatePhpStormMetaFileContent());
     }
 
-    public function generatePhpStormMetaFileContent()
+    public function generatePhpStormMetaFileContent(): string
     {
-        $overrideEntries = array(new OverRideEntry('\\ClassRegistry::init(0)'));
+        $overrideEntries = [new OverRideEntry('\\ClassRegistry::init(0)')];
         foreach ($this->analyzer->getModelReaders() as $modelReader) {
             $overrideEntries[0]->add($modelReader->getSymbol(), $modelReader->getModelName());
         }
@@ -37,7 +37,7 @@ class Generator
         return $content;
     }
 
-    private function getMetaFileTemplatePath()
+    private function getMetaFileTemplatePath(): string
     {
         return __DIR__ . '/../resources/phpstorm.meta.template.php';
     }

@@ -6,21 +6,18 @@ class CakePhp2Plugin extends CakePhp2Dir
 {
     private $pluginName;
 
-    public function __construct($appDir, $pluginName)
+    public function __construct(string $appDir, string $pluginName)
     {
         parent::__construct($appDir);
         $this->pluginName = $pluginName;
     }
 
-    /**
-     * @return bool
-     */
-    public function isPlugin()
+    public function isPlugin(): bool
     {
         return true;
     }
 
-    public function getPluginName()
+    public function getPluginName(): ?string
     {
         return $this->pluginName;
     }
@@ -28,7 +25,7 @@ class CakePhp2Plugin extends CakePhp2Dir
     /**
      * @return ModelReader[]
      */
-    public function getModelReaders()
+    public function getModelReaders(): array
     {
         $modelReaders = array();
         foreach ($this->getModelFiles() as $modelFile) {

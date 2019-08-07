@@ -11,7 +11,10 @@ class Analyzer
         $this->app = $app;
     }
 
-    public function getModelReaders()
+    /**
+     * @return ModelReader[]
+     */
+    public function getModelReaders(): array
     {
         $modelReaders = $this->app->getModelReaders();
 
