@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
-use CakePhp2IdeHelper\CakePhp2Analyzer\StructualElements\CakePhp2App;
+use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
 use CakePhp2IdeHelper\CakePhp2Analyzer\CakePhp2AppAnalyzer;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use Tests\TestCase;
