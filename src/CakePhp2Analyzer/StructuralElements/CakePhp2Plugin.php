@@ -1,6 +1,10 @@
 <?php
 
-namespace CakePhp2IdeHelper;
+namespace CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements;
+
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2Dir;
 
 class CakePhp2Plugin extends CakePhp2Dir
 {
@@ -33,5 +37,15 @@ class CakePhp2Plugin extends CakePhp2Dir
         }
 
         return $modelReaders;
+    }
+
+    public function getBehaviorReaders(): array
+    {
+        $behaviorReaders = [];
+        foreach ($this->getBehaviorFiles() as $behaviorFile) {
+            $behaviorReaders[] = new BehaviorReader($behaviorFile, $this->getPluginName());
+        }
+
+        return $behaviorReaders;
     }
 }
