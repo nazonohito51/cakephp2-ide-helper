@@ -5,9 +5,11 @@ namespace CakePhp2IdeHelper;
 use CakePhp2IdeHelper\CakePhp2Analyzer\CakePhp2AppAnalyzer;
 use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
 use CakePhp2IdeHelper\PhpStormMeta\ExpectArgumentsEntry;
+use CakePhp2IdeHelper\PhpStormMeta\IdeHelperClassEntry;
+use CakePhp2IdeHelper\PhpStormMeta\IdeHelperContent;
 use CakePhp2IdeHelper\PhpStormMeta\OverRideEntry;
 use PhpParser\Comment\Doc;
-use PhpParser\PrettyPrinter\Standard;
+use PhpParser\Node\Stmt\Class_;
 
 class Generator
 {
@@ -23,8 +25,10 @@ class Generator
     public function generate(): void
     {
         $phpstormMetaFile = new \SplFileObject($this->rootDir . '/.phpstorm.meta.php', 'w');
-
         $phpstormMetaFile->fwrite($this->generatePhpStormMetaFileContent());
+
+        $ideHelperFile = new \SplFileObject($this->rootDir . '/_ide_helper.php', 'w');
+        $ideHelperFile->fwrite($this->createIdeHelperContent());
     }
 
     public function generatePhpStormMetaFileContent(): string
@@ -79,21 +83,30 @@ class Generator
         return $entry;
     }
 
-    private function createIdeHelperContent()
+    private function createIdeHelperContent(): IdeHelperContent
     {
+        $content = new IdeHelperContent();
         foreach ($this->analyzer->getBehaviorReaders() as $behaviorReader) {
-            $methods = $behaviorReader->getPublicMethods();
+            $entry = new IdeHelperClassEntry($behaviorReader->getBehaviorName());
+            foreach ($behaviorReader->getPublicMethods() as $method) {
+                $method = clone $method;
 
-            foreach ($methods as $method) {
+                // remove first argument
                 array_shift($method->params);
-                $method->stmts = [];
+                // remove method body
+                $method->stmts = null;
+                // create phpdoc
                 $fqsen = "\\{$behaviorReader->getBehaviorName()}::{$method->name->toString()}()";
                 $method->setDocComment(new Doc("/**\n * @see {$fqsen}\n */"));
-            }
+                // change to abstract function
+                $method->flags |= Class_::MODIFIER_ABSTRACT;
 
-            $prettyPrinter = new Standard();
-            var_dump($prettyPrinter->prettyPrintFile($methods));
+                $entry->addMethod($method);
+            }
+            $content->addEntry($entry);
         }
+
+        return $content;
     }
 
     public function updateModelPhpDoc()
