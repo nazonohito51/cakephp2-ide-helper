@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Tests\Unit\CakePhp2Analyzer\Readers;
 
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
-use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
+use PhpParser\Node\Stmt\ClassMethod;
 use Tests\TestCase;
 
 class BehaviorReaderTest extends TestCase
@@ -13,8 +13,10 @@ class BehaviorReaderTest extends TestCase
     {
         $behaviorReader = new BehaviorReader($this->fixtureAppPath('Model/Behavior/SomeBehavior1.php'));
 
-        $behaviorReader->getPublicMethods();
+        $publicMethods = $behaviorReader->getPublicMethods();
 
-        $this->assertFalse(false);
+        $this->assertSame(['someBehavior1Method1', 'someBehavior1Method2', 'someBehavior1Method3'], array_map(function (ClassMethod $classMethod) {
+            return $classMethod->name->toString();
+        }, $publicMethods));
     }
 }

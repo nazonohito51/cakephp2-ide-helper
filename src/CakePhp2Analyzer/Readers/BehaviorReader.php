@@ -60,11 +60,11 @@ class BehaviorReader
     public function getPublicMethods(): array
     {
         $ret = [];
-        ['setup', 'cleanup'];
-        $callbackMethods = ['beforeFind', 'afterFind', 'beforeValidate', 'afterValidate', 'beforeSave', 'afterSave', 'beforeDelete', 'afterDelete ', 'onError'];
-        foreach ($this->ast->getPublicMethods() as $publicMethod) {
-            if (!in_array($publicMethod->name->toString(), [''])) {
 
+        $definedMethods = ['setup', 'cleanup', 'beforeFind', 'afterFind', 'beforeValidate', 'afterValidate', 'beforeSave', 'afterSave', 'beforeDelete', 'afterDelete', 'onError'];
+        foreach ($this->ast->getPublicMethods() as $publicMethod) {
+            if (!in_array($publicMethod->name->toString(), $definedMethods)) {
+                $ret[] = $publicMethod;
             }
         }
 
