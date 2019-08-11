@@ -1,18 +1,18 @@
 <?php
 
-namespace CakePhp2IdeHelper;
+namespace CakePhp2IdeHelper\PhpStormMeta;
 
 class OverRideEntry
 {
     private $target;
-    private $map = array();
+    private $map = [];
 
-    public function __construct($target)
+    public function __construct(string $target)
     {
         $this->target = $target;
     }
 
-    public function add($key, $value)
+    public function add(string $key, string $value)
     {
         $this->map[$key] = $value;
     }
