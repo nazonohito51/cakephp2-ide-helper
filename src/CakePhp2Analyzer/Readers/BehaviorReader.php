@@ -64,7 +64,7 @@ class BehaviorReader
         $definedMethods = ['setup', 'cleanup', 'beforeFind', 'afterFind', 'beforeValidate', 'afterValidate', 'beforeSave', 'afterSave', 'beforeDelete', 'afterDelete', 'onError'];
         foreach ($this->ast->getPublicMethods() as $publicMethod) {
             if (!in_array($publicMethod->name->toString(), $definedMethods)) {
-                $ret[] = $publicMethod;
+                $ret[] = clone $publicMethod;
             }
         }
 
