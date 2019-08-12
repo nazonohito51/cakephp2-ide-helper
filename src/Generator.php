@@ -6,11 +6,14 @@ use Barryvdh\Reflection\DocBlock;
 use Barryvdh\Reflection\DocBlock\Serializer as DocBlockSerializer;
 use Barryvdh\Reflection\DocBlock\Tag;
 use CakePhp2IdeHelper\CakePhp2Analyzer\CakePhp2AppAnalyzer;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
+use CakePhp2IdeHelper\Exception\FailedUpdatingPhpDocException;
 use CakePhp2IdeHelper\PhpStormMeta\ExpectArgumentsEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperContent;
 use CakePhp2IdeHelper\PhpStormMeta\OverRideEntry;
+use CakePhp2IdeHelper\PhpStormMeta\UpdateModelDocEntry;
 use PhpParser\Comment\Doc;
 
 class Generator
@@ -18,10 +21,10 @@ class Generator
     private $rootDir;
     private $analyzer;
 
-    public function __construct(string $rootDir, string $appDir)
+    public function __construct(string $rootDir, CakePhp2App $app)
     {
         $this->rootDir = $rootDir;
-        $this->analyzer = new CakePhp2AppAnalyzer(new CakePhp2App($appDir));
+        $this->analyzer = new CakePhp2AppAnalyzer($app);
     }
 
     public function generate(): void
@@ -29,11 +32,19 @@ class Generator
         $phpstormMetaFile = new \SplFileObject($this->rootDir . '/.phpstorm.meta.php', 'w');
         $phpstormMetaFile->fwrite($this->generatePhpStormMetaFileContent());
 
-        $ideHelperContent = $this->createIdeHelperContent();
+        $ideHelperContent = $this->generateIdeHelperContent();
         $ideHelperFile = new \SplFileObject($this->rootDir . '/_ide_helper.php', 'w');
         $ideHelperFile->fwrite($ideHelperContent);
 
-        $this->updateModelPhpDoc($ideHelperContent);
+        foreach ($this->analyzer->getModelReaders() as $modelReader) {
+            if (!empty($modelReader->getBehaviorSymbols())) {
+                try {
+                    $this->createModelDocEntry($modelReader, $ideHelperContent);
+                } catch (FailedUpdatingPhpDocException $e) {
+                    // TODO: error handling
+                }
+            }
+        }
     }
 
     public function generatePhpStormMetaFileContent(): string
@@ -99,7 +110,7 @@ class Generator
         return $entry;
     }
 
-    private function createIdeHelperContent(): IdeHelperContent
+    public function generateIdeHelperContent(): IdeHelperContent
     {
         $content = new IdeHelperContent();
         foreach ($this->analyzer->getBehaviorReaders() as $behaviorReader) {
@@ -121,44 +132,73 @@ class Generator
         return $content;
     }
 
-    public function updateModelPhpDoc(IdeHelperContent $content)
+    /**
+     * @return UpdateModelDocEntry[]
+     */
+    public function generateModelDocEntries(): array
     {
+        $ideHelperContent = $this->generateIdeHelperContent();
+
+        $ret = [];
         foreach ($this->analyzer->getModelReaders() as $modelReader) {
-            if (empty($modelReader->getBehaviorSymbols())) {
-                continue;
-            }
-
-            if (!is_null($originalPhpDoc = $modelReader->getPhpDoc())) {
-                $phpdoc = new DocBlock($originalPhpDoc);
-            } else {
-                $phpdoc = new DocBlock('');
-            }
-
-            foreach ($modelReader->getBehaviorSymbols() as $behaviorSymbol) {
-                if ($behaviorReader = $this->analyzer->searchBehaviorFromSymbol($behaviorSymbol)) {
-                    $className = $content->getMockClassFromClassName($behaviorReader->getBehaviorName());
-
-                    $tag = Tag::createInstance("@mixin {$className} Added by cakephp2-ide-helper", $phpdoc);
-
-                    $exist = false;
-                    foreach ($phpdoc->getTags() as $existTag) {
-                        if ($existTag->__toString() === $tag->__toString()) {
-                            $exist = true;
-                            break;
-                        }
-                    }
-                    if (!$exist) {
-                        $phpdoc->appendTag($tag);
-                    }
+            if (!empty($modelReader->getBehaviorSymbols())) {
+                try {
+                    $ret[] = $this->createModelDocEntry($modelReader, $ideHelperContent);
+                } catch (FailedUpdatingPhpDocException $e) {
+                    // TODO: error handling
                 }
             }
-
-            $docComment = (new DocBlockSerializer())->getDocComment($phpdoc);
-            if (empty($phpdoc->getShortDescription()) && empty($phpdoc->getLongDescription()->getContents())) {
-                $docComment = str_replace("/**\n * \n *", '/**', $docComment);
-            }
-            var_dump($docComment);
         }
+
+        return $ret;
+    }
+
+    public function createModelDocEntry(ModelReader $modelReader, IdeHelperContent $content): UpdateModelDocEntry
+    {
+        $originalDocComment = $modelReader->getPhpDoc() ?? '';
+        $replaceDoc = new DocBlock($originalDocComment);
+
+        foreach ($modelReader->getBehaviorSymbols() as $behaviorSymbol) {
+            if ($behaviorReader = $this->analyzer->searchBehaviorFromSymbol($behaviorSymbol)) {
+                $className = $content->getMockClassFromOriginalClass($behaviorReader->getBehaviorName());
+                $tag = Tag::createInstance("@mixin {$className} Added by cakephp2-ide-helper", $replaceDoc);
+
+                $exist = false;
+                foreach ($replaceDoc->getTags() as $existTag) {
+                    if ($existTag->__toString() === $tag->__toString()) {
+                        $exist = true;
+                        break;
+                    }
+                }
+                if (!$exist) {
+                    $replaceDoc->appendTag($tag);
+                }
+            }
+        }
+
+        return new UpdateModelDocEntry($modelReader, $replaceDoc);
+
+//        $replaceDocComment = (new DocBlockSerializer())->getDocComment($replaceDoc);
+//        if (empty($replaceDoc->getShortDescription()) && empty($replaceDoc->getLongDescription()->getContents())) {
+//            // remove summary, description
+//            $replaceDocComment = str_replace("/**\n * \n * ", '/**', $replaceDocComment);
+//        }
+
+//        $file = new \SplFileObject($modelReader->getRealPath(), 'w');
+//        $originalContent = $modelReader->getContent();
+//        if (!empty($originalDocComment)) {
+//            $replacedContents = str_replace($originalDocComment, $replaceDocComment, $originalContent);
+//        } else {
+//            $needle = "class {$modelReader->getModelName()}";
+//            $replace = "{$replaceDocComment}\nclass {$modelReader->getModelName()}";
+//            $pos = strpos($originalContent, $needle);
+//            if ($pos === false) {
+//                throw new FailedUpdatingPhpDocException($file->getRealPath());
+//            }
+//            $replacedContents = substr_replace($originalContent, $replace, $pos, strlen($needle));
+//        }
+//
+//        $file->fwrite($replacedContents);
     }
 
     private function getMetaFileTemplatePath(): string
