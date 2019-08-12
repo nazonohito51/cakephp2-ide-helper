@@ -1,6 +1,11 @@
 # cakephp2-ide-helper
 
 ## TODO
-- [] read actsAs from Model
-- [] read public methods from Behavior
-- [] update phpdoc on Model with diff
+- [x] read actsAs from Model
+- [x] read public methods from Behavior
+- [x] update phpdoc on Model with diff(use str_replace)
+- [x] ClassRegistry argument helper
+- [x] Fabricate argument helper
+- [ ] fixtures argument helper(phpstorm meta)
+- [ ] getDataSource
+- [x] find('first', 'count' ...)
