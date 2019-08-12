@@ -2,6 +2,15 @@
 
 \App::uses('AppModel', 'Model');
 
+/**
+ * This is summary.
+ *
+ * This is
+ * description.
+ *
+ * @property \CakePhp2IdeHelper\Generator hoge
+ * @mixin \CakePhp2IdeHelper\SomeBehavior1
+ */
 class SomeModel1 extends AppModel
 {
     public $actsAs = [
