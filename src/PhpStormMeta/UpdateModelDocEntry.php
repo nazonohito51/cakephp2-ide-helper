@@ -57,7 +57,8 @@ class UpdateModelDocEntry
 
     public function update(): void
     {
+        $replacedContent = $this->getReplaceModelContent();
         $file = new \SplFileObject($this->getModelPath(), 'w');
-        $file->fwrite($this->getReplaceModelContent());
+        $file->fwrite($replacedContent);
     }
 }
