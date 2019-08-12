@@ -36,6 +36,19 @@ class Ast
         return $this->statements;
     }
 
+    public function getClassLike(): Stmt\ClassLike
+    {
+        $visitor = new GetTargetVisitor($this->file->getBasename('.php'), static function (Node $node): bool {
+            return $node instanceof Stmt\ClassLike;
+        });
+
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($this->getStatements());
+
+        return $visitor->getFirstTarget();
+    }
+
     public function getProperty(string $propertyName): ?Stmt\PropertyProperty
     {
         $visitor = new GetTargetVisitor($this->file->getBasename('.php'), static function (Node $node) use ($propertyName): bool {

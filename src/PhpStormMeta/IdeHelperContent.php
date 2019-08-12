@@ -9,6 +9,8 @@ use PhpParser\PrettyPrinter\Standard;
 
 class IdeHelperContent
 {
+    private const NAMESPACE = 'CakePhp2IdeHelper';
+
     /**
      * @var IdeHelperClassEntry[]
      */
@@ -19,9 +21,21 @@ class IdeHelperContent
         $this->entries[] = $entry;
     }
 
+    public function getMockClassFromClassName(string $className): ?string
+    {
+        foreach ($this->entries as $entry) {
+            if ($entry->getClassName() === $className) {
+                $namespace = self::NAMESPACE;
+                return "\\{$namespace}\\$className";
+            }
+        }
+
+        return null;
+    }
+
     public function __toString(): string
     {
-        $factory = (new BuilderFactory)->namespace('CakePhp2IdeHelper');
+        $factory = (new BuilderFactory)->namespace(self::NAMESPACE);
 
         foreach ($this->entries as $entry) {
             $factory->addStmt($entry->createStmt());

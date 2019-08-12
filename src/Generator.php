@@ -2,14 +2,17 @@
 
 namespace CakePhp2IdeHelper;
 
+use Barryvdh\Reflection\DocBlock;
+use Barryvdh\Reflection\DocBlock\Serializer as DocBlockSerializer;
+use Barryvdh\Reflection\DocBlock\Tag;
 use CakePhp2IdeHelper\CakePhp2Analyzer\CakePhp2AppAnalyzer;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
 use CakePhp2IdeHelper\PhpStormMeta\ExpectArgumentsEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperContent;
 use CakePhp2IdeHelper\PhpStormMeta\OverRideEntry;
 use PhpParser\Comment\Doc;
-use PhpParser\Node\Stmt\Class_;
 
 class Generator
 {
@@ -27,8 +30,11 @@ class Generator
         $phpstormMetaFile = new \SplFileObject($this->rootDir . '/.phpstorm.meta.php', 'w');
         $phpstormMetaFile->fwrite($this->generatePhpStormMetaFileContent());
 
+        $ideHelperContent = $this->createIdeHelperContent();
         $ideHelperFile = new \SplFileObject($this->rootDir . '/_ide_helper.php', 'w');
-        $ideHelperFile->fwrite($this->createIdeHelperContent());
+        $ideHelperFile->fwrite($ideHelperContent);
+
+        $this->updateModelPhpDoc($ideHelperContent);
     }
 
     public function generatePhpStormMetaFileContent(): string
@@ -36,7 +42,8 @@ class Generator
         $overrideEntries = [$this->createClassRegistryReturnTypeOverride()];
         $expectArgumentsEntries = [
             $this->createClassRegistryExpectArgument(),
-            $this->createFabricateExpectArgument()
+            $this->createFabricateExpectArgument(),
+            $this->createModelMethodArgument()
         ];
 
         // TODO: create getDataSource return type
@@ -83,45 +90,73 @@ class Generator
         return $entry;
     }
 
+    private function createModelMethodArgument(): ExpectArgumentsEntry
+    {
+        $entry = new ExpectArgumentsEntry('\\Model::find()', 0);
+        foreach (['first', 'count', 'all', 'list', 'threaded', 'neighbors'] as $arg) {
+            $entry->add($arg);
+        }
+
+        return $entry;
+    }
+
     private function createIdeHelperContent(): IdeHelperContent
     {
         $content = new IdeHelperContent();
         foreach ($this->analyzer->getBehaviorReaders() as $behaviorReader) {
-            $entry = new IdeHelperClassEntry($behaviorReader->getBehaviorName());
+            $classEntry = new IdeHelperClassEntry($behaviorReader->getBehaviorName());
             foreach ($behaviorReader->getPublicMethods() as $method) {
-                $method = clone $method;
-
                 // remove first argument
                 array_shift($method->params);
                 // remove method body
-                $method->stmts = null;
+                $method->stmts = [];
                 // create phpdoc
                 $fqsen = "\\{$behaviorReader->getBehaviorName()}::{$method->name->toString()}()";
                 $method->setDocComment(new Doc("/**\n * @see {$fqsen}\n */"));
-                // change to abstract function
-                $method->flags |= Class_::MODIFIER_ABSTRACT;
 
-                $entry->addMethod($method);
+                $classEntry->addMethod($method);
             }
-            $content->addEntry($entry);
+            $content->addEntry($classEntry);
         }
 
         return $content;
     }
 
-    public function updateModelPhpDoc()
+    public function updateModelPhpDoc(IdeHelperContent $content)
     {
-        $behaviorReaders = $this->analyzer->getBehaviorReaders();
-
         foreach ($this->analyzer->getModelReaders() as $modelReader) {
-            // TODO: collect actsAs
+            if (empty($modelReader->getBehaviorSymbols())) {
+                continue;
+            }
+
+            if (!is_null($originalPhpDoc = $modelReader->getPhpDoc())) {
+                $phpdoc = new DocBlock($originalPhpDoc);
+            } else {
+                $phpdoc = new DocBlock('');
+            }
+
             foreach ($modelReader->getBehaviorSymbols() as $behaviorSymbol) {
-                if (!is_null($behaviorReader = $this->analyzer->searchBehaviorFromSymbol($behaviorSymbol))) {
-                    // TODO: collect public methods in Behavior
-                    // TODO: create _ide_helper.php(with analyze Behavior, and create that mocks)
+                if ($behaviorReader = $this->analyzer->searchBehaviorFromSymbol($behaviorSymbol)) {
+                    $className = $content->getMockClassFromClassName($behaviorReader->getBehaviorName());
+
+                    $tag = Tag::createInstance("@mixin {$className} Added by cakephp2-ide-helper", $phpdoc);
+
+                    $exist = false;
+                    foreach ($phpdoc->getTags() as $existTag) {
+                        if ($existTag->__toString() === $tag->__toString()) {
+                            $exist = true;
+                            break;
+                        }
+                    }
+                    if (!$exist) {
+                        $phpdoc->appendTag($tag);
+                    }
                 }
             }
-            // TODO: update model phpdoc
+
+            $serializer = new DocBlockSerializer();
+            $docComment = $serializer->getDocComment($phpdoc);
+            var_dump($docComment);
         }
     }
 
