@@ -22,7 +22,7 @@ class GenerateHelperCommand extends AbstractIdeHelperCommand
         $ideHelperContent = $generator->generateIdeHelperContent();
 
         $ideHelperFile = new \SplFileObject(getcwd() . '/_ide_helper.php', 'w');
-        $ideHelperFile->fwrite($ideHelperContent);
+        $ideHelperFile->fwrite($ideHelperContent->__toString());
 
         return 0;
     }
