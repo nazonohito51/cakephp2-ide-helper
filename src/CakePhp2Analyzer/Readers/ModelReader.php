@@ -73,7 +73,13 @@ class ModelReader
 
     public function havePhpDoc(): bool
     {
-        $this->getPhpDoc();
+        return !is_null($this->getPhpDoc());
+    }
+
+    public function getPhpDoc(): ?string
+    {
+        $classLike = $this->ast->getClassLike();
+        return $classLike->getDocComment();
     }
 
     public function replacePhpDoc()
