@@ -21,7 +21,7 @@ class IdeHelperContent
         $this->entries[] = $entry;
     }
 
-    public function getMockClassFromClassName(string $className): ?string
+    public function getMockClassFromOriginalClass(string $className): ?string
     {
         foreach ($this->entries as $entry) {
             if ($entry->getClassName() === $className) {
