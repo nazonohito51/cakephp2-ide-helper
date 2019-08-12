@@ -8,4 +8,7 @@
 - [x] Fabricate argument helper
 - [ ] fixtures argument helper(phpstorm meta)
 - [ ] getDataSource
-- [x] find('first', 'count' ...)
+- [x] Model::find('first', 'count' ...)
+- [ ] Model::find('', ['condition'...])
+- [ ] withRead argument
+- [ ] ignore unload behavior
