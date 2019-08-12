@@ -42,7 +42,7 @@ abstract class CakePhp2Dir
     public function addModelDir(string $modelDir): void
     {
         if (!is_dir($modelDir)) {
-            throw new \InvalidArgumentException();
+            throw new \InvalidArgumentException('model dir is invalid:' . $modelDir);
         }
 
         $this->modelDirs[] = $modelDir;
