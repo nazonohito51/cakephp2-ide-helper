@@ -80,7 +80,8 @@ class ModelReader
     public function getPhpDoc(): ?string
     {
         $classLike = $this->ast->getClassLike();
-        return $classLike->getDocComment();
+        $docComment = $classLike->getDocComment();
+        return !is_null($docComment) ? $docComment->__toString() : null;
     }
 
     public function replacePhpDoc()
