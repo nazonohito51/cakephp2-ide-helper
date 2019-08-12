@@ -28,12 +28,12 @@ abstract class CakePhp2Dir
         $this->modelDirs[] = $this->getModelDirPath();
     }
 
-    public function getModelDirPath(): string
+    protected function getModelDirPath(): string
     {
         return $this->appDir . '/Model';
     }
 
-    public function getFixtureDirPath(): string
+    protected function getFixtureDirPath(): string
     {
         return $this->appDir . '/Test/Fixture';
     }
@@ -50,7 +50,7 @@ abstract class CakePhp2Dir
     /**
      * @return string[]
      */
-    public function getModelFiles(): array
+    protected function getModelFiles(): array
     {
         $ret = [];
         foreach ($this->modelDirs as $modelDir) {
@@ -78,7 +78,7 @@ abstract class CakePhp2Dir
     /**
      * @return string[]
      */
-    public function getBehaviorFiles(): array
+    protected function getBehaviorFiles(): array
     {
         $ret = [];
         foreach ($this->modelDirs as $modelDir) {
@@ -103,7 +103,7 @@ abstract class CakePhp2Dir
         return $behaviorReaders;
     }
 
-    private function getFixtureFiles(): array
+    protected function getFixtureFiles(): array
     {
         $ret = [];
         foreach (glob($this->getFixtureDirPath() . '/*.php') as $path) {

@@ -31,7 +31,7 @@ class CakePhp2Plugin extends CakePhp2Dir
      */
     public function getModelReaders(): array
     {
-        $modelReaders = array();
+        $modelReaders = [];
         foreach ($this->getModelFiles() as $modelFile) {
             $modelReaders[] = new ModelReader($modelFile, $this->getPluginName());
         }

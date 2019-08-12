@@ -79,7 +79,7 @@ class CakePhp2App extends CakePhp2Dir
     /**
      * @return string[]
      */
-    public function getBehaviorFiles(): array
+    protected function getBehaviorFiles(): array
     {
         $ret = parent::getBehaviorFiles();
 
