@@ -17,7 +17,7 @@ class BehaviorReader
     public function __construct(string $path, string $pluginName = '')
     {
         if (!is_file($path)) {
-            throw new \InvalidArgumentException('invalid model path: ' . $path);
+            throw new \InvalidArgumentException('invalid behavior path: ' . $path);
         }
 
         $this->file = new \SplFileInfo($path);

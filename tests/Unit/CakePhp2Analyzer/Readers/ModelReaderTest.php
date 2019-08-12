@@ -28,10 +28,28 @@ class ModelReaderTest extends TestCase
         $this->assertSame('SomePlugin.SomeModel1', $modelReader->getSymbol());
     }
 
-    public function testGetBehaviorNames()
+    public function testGetBehaviorSymbols()
     {
         $modelReader = new ModelReader($this->fixtureAppPath('Model/SomeModel1.php'));
 
         $this->assertSame(['SomeBehavior1', 'SomeBehavior2', 'SomePlugin1.SomeBehavior3'], $modelReader->getBehaviorSymbols());
+    }
+
+    public function testGetPhpDoc()
+    {
+        $modelReader = new ModelReader($this->fixtureAppPath('Model/SomeModel1.php'));
+
+        $expected = <<<PHPDOC
+/**
+ * This is summary.
+ *
+ * This is
+ * description.
+ *
+ * @property \CakePhp2IdeHelper\Generator hoge
+ * @mixin \CakePhp2IdeHelper\SomeBehavior1
+ */
+PHPDOC;
+        $this->assertSame($expected, $modelReader->getPhpDoc());
     }
 }
