@@ -20,7 +20,7 @@ class ModelReader
             throw new \InvalidArgumentException('invalid model path: ' . $path);
         }
 
-        $this->file = new \SplFileInfo($path);
+        $this->file = new \SplFileObject($path);
         $this->pluginName = $pluginName;
         $this->ast = new Ast($path);
     }
@@ -28,6 +28,16 @@ class ModelReader
     public function getModelName(): string
     {
         return $this->file->getBasename('.php');
+    }
+
+    public function getRealPath(): string
+    {
+        return $this->file->getRealPath();
+    }
+
+    public function getContent(): string
+    {
+        return file_get_contents($this->getRealPath());
     }
 
     public function isPlugin(): bool
@@ -54,10 +64,12 @@ class ModelReader
      */
     public function getBehaviorSymbols(): array
     {
-        $property = $this->ast->getProperty('actsAs');
+        if (is_null($property = $this->ast->getProperty('actsAs'))) {
+            return [];
+        }
 
         $behaviorSymbols = [];
-        if ($property->default instanceof Array_) {
+        if (!is_null($property->default) && $property->default instanceof Array_) {
             foreach ($property->default->items as $item) {
                 if ($item instanceof ArrayItem) {
                     if (!is_null($item->key) && $item->key instanceof String_) {
@@ -82,14 +94,5 @@ class ModelReader
         $classLike = $this->ast->getClassLike();
         $docComment = $classLike->getDocComment();
         return !is_null($docComment) ? $docComment->__toString() : null;
-    }
-
-    public function replacePhpDoc()
-    {
-        if ($this->havePhpDoc()) {
-            // TODO: replace original phpdoc
-        } else {
-            // TODO: replace class name (class -> /**hogehoge*/\nclass)
-        }
     }
 }
