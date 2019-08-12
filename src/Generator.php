@@ -6,7 +6,6 @@ use Barryvdh\Reflection\DocBlock;
 use Barryvdh\Reflection\DocBlock\Serializer as DocBlockSerializer;
 use Barryvdh\Reflection\DocBlock\Tag;
 use CakePhp2IdeHelper\CakePhp2Analyzer\CakePhp2AppAnalyzer;
-use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
 use CakePhp2IdeHelper\PhpStormMeta\ExpectArgumentsEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperClassEntry;
@@ -154,8 +153,10 @@ class Generator
                 }
             }
 
-            $serializer = new DocBlockSerializer();
-            $docComment = $serializer->getDocComment($phpdoc);
+            $docComment = (new DocBlockSerializer())->getDocComment($phpdoc);
+            if (empty($phpdoc->getShortDescription()) && empty($phpdoc->getLongDescription()->getContents())) {
+                $docComment = str_replace("/**\n * \n *", '/**', $docComment);
+            }
             var_dump($docComment);
         }
     }
