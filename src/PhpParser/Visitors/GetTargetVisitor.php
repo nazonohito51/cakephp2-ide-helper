@@ -59,6 +59,6 @@ class GetTargetVisitor extends NodeVisitorAbstract
 
     private function isTargetClass(Node $node): bool
     {
-        return $node instanceof Node\Stmt\ClassLike && $node->name->toString() === $this->targetClassName;
+        return $node instanceof Node\Stmt\ClassLike && !is_null($node->name) && $node->name->toString() === $this->targetClassName;
     }
 }
