@@ -32,7 +32,9 @@ class Generator
         $expectArgumentsEntries = [
             $this->createClassRegistryExpectArgument(),
             $this->createFabricateExpectArgument(),
-            $this->createModelMethodArgument()
+            $this->createModelMethodArgument(),
+            $this->createSwitchableDataSourceWithReadArgument(),
+            $this->createSwitchableDataSourceWithWriteArgument(),
         ];
 
         // TODO: create getDataSource return type
@@ -85,6 +87,26 @@ class Generator
         foreach (['first', 'count', 'all', 'list', 'threaded', 'neighbors'] as $arg) {
             $entry->add($arg);
         }
+
+        return $entry;
+    }
+
+    private function createSwitchableDataSourceWithReadArgument(): ExpectArgumentsEntry
+    {
+        $ideHelperNamespace = IdeHelperContent::NAMESPACE;
+        $entry = new ExpectArgumentsEntry("\\{$ideHelperNamespace}\\SwitchableDatasourceBehavior::withRead()", 0);
+        $entry->add("function (Model \$model) {\n            return;\n        }");
+        $entry->add("static function (Model \$model) {\n            return;\n        }");
+
+        return $entry;
+    }
+
+    private function createSwitchableDataSourceWithWriteArgument(): ExpectArgumentsEntry
+    {
+        $ideHelperNamespace = IdeHelperContent::NAMESPACE;
+        $entry = new ExpectArgumentsEntry("\\{$ideHelperNamespace}\\SwitchableDatasourceBehavior::withWrite()", 0);
+        $entry->add("function (Model \$model) {\n            return;\n        }");
+        $entry->add("static function (Model \$model) {\n            return;\n        }");
 
         return $entry;
     }

@@ -41,4 +41,24 @@ namespace PHPSTORM_META {
         'threaded',
         'neighbors',
     );
+    expectedArguments(
+        \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withRead(),
+        0,
+        'function (Model $model) {
+            return;
+        }',
+        'static function (Model $model) {
+            return;
+        }',
+    );
+    expectedArguments(
+        \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withWrite(),
+        0,
+        'function (Model $model) {
+            return;
+        }',
+        'static function (Model $model) {
+            return;
+        }',
+    );
 }

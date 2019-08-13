@@ -9,7 +9,7 @@ use PhpParser\PrettyPrinter\Standard;
 
 class IdeHelperContent
 {
-    private const NAMESPACE = 'CakePhp2IdeHelper';
+    public const NAMESPACE = 'CakePhp2IdeHelper';
 
     /**
      * @var IdeHelperClassEntry[]
