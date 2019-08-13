@@ -7,8 +7,10 @@
 - [x] ClassRegistry argument helper
 - [x] Fabricate argument helper
 - [ ] fixtures argument helper(phpstorm meta)
+- [ ] model property in controller
 - [ ] getDataSource
 - [x] Model::find('first', 'count' ...)
 - [ ] Model::find('', ['condition'...])
 - [ ] withRead argument
 - [ ] ignore unload behavior
+- [ ] disable behavior extend
