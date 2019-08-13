@@ -9,21 +9,8 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
 
-class FixtureReader
+class FixtureReader extends PhpFileReader
 {
-    private $file;
-    private $ast;
-
-    public function __construct(string $path)
-    {
-        if (!is_file($path)) {
-            throw new \InvalidArgumentException('invalid fixture path: ' . $path);
-        }
-
-        $this->file = new \SplFileInfo($path);
-        $this->ast = new Ast($path);
-    }
-
     public function getFabricateDefineNames()
     {
         $staticCalls = $this->ast->getStaticCalls(['Fabricate', 'Fabricate\\Fabricate', ['\\Fabricate\\Fabricate']], 'define');

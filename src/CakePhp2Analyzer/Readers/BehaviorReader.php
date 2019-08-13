@@ -8,26 +8,20 @@ use PhpParser\Comment\Doc;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\PrettyPrinter\Standard;
 
-class BehaviorReader
+class BehaviorReader extends PhpFileReader
 {
-    private $file;
-    private $ast;
     private $pluginName;
 
     public function __construct(string $path, string $pluginName = '')
     {
-        if (!is_file($path)) {
-            throw new \InvalidArgumentException('invalid behavior path: ' . $path);
-        }
+        parent::__construct($path);
 
-        $this->file = new \SplFileInfo($path);
-        $this->ast = new Ast($path);
         $this->pluginName = $pluginName;
     }
 
     public function getBehaviorName(): string
     {
-        return $this->file->getBasename('.php');
+        return $this->getBasename();
     }
 
     public function getBehaviorNameWithoutSuffix(): string

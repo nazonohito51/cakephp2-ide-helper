@@ -8,36 +8,20 @@ use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
 
-class ModelReader
+class ModelReader extends PhpFileReader
 {
-    private $file;
     private $pluginName;
-    private $ast;
 
     public function __construct(string $path, string $pluginName = '')
     {
-        if (!is_file($path)) {
-            throw new \InvalidArgumentException('invalid model path: ' . $path);
-        }
+        parent::__construct($path);
 
-        $this->file = new \SplFileObject($path);
         $this->pluginName = $pluginName;
-        $this->ast = new Ast($path);
     }
 
     public function getModelName(): string
     {
-        return $this->file->getBasename('.php');
-    }
-
-    public function getRealPath(): string
-    {
-        return $this->file->getRealPath();
-    }
-
-    public function getContent(): string
-    {
-        return file_get_contents($this->getRealPath());
+        return $this->getBasename();
     }
 
     public function isPlugin(): bool
