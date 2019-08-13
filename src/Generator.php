@@ -3,7 +3,6 @@
 namespace CakePhp2IdeHelper;
 
 use Barryvdh\Reflection\DocBlock;
-use Barryvdh\Reflection\DocBlock\Serializer as DocBlockSerializer;
 use Barryvdh\Reflection\DocBlock\Tag;
 use CakePhp2IdeHelper\CakePhp2Analyzer\CakePhp2AppAnalyzer;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
@@ -25,26 +24,6 @@ class Generator
     {
         $this->rootDir = $rootDir;
         $this->analyzer = new CakePhp2AppAnalyzer($app);
-    }
-
-    public function generate(): void
-    {
-        $phpstormMetaFile = new \SplFileObject($this->rootDir . '/.phpstorm.meta.php', 'w');
-        $phpstormMetaFile->fwrite($this->generatePhpStormMetaFileContent());
-
-        $ideHelperContent = $this->generateIdeHelperContent();
-        $ideHelperFile = new \SplFileObject($this->rootDir . '/_ide_helper.php', 'w');
-        $ideHelperFile->fwrite($ideHelperContent);
-
-        foreach ($this->analyzer->getModelReaders() as $modelReader) {
-            if (!empty($modelReader->getBehaviorSymbols())) {
-                try {
-                    $this->createModelDocEntry($modelReader, $ideHelperContent);
-                } catch (FailedUpdatingPhpDocException $e) {
-                    // TODO: error handling
-                }
-            }
-        }
     }
 
     public function generatePhpStormMetaFileContent(): string
