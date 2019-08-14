@@ -83,6 +83,44 @@ class Ast
 
     /**
      * @param string $methodName
+     * @return Node\Expr\MethodCall[]
+     */
+    public function getMethodCalls(string $methodName): array
+    {
+        $visitor = new class ($methodName) extends NodeVisitorAbstract {
+            private $methodName;
+            private $methodCalls = [];
+
+            public function __construct(string $methodName)
+            {
+                $this->methodName = strtolower($methodName);
+            }
+
+            public function enterNode(Node $node)
+            {
+                if ($node instanceof Node\Expr\MethodCall) {
+                    if ($node->name->toLowerString() === $this->methodName) {
+                        $this->methodCalls[] = $node;
+                    }
+                }
+                return null;
+            }
+
+            public function getMethodCalls(): array
+            {
+                return $this->methodCalls;
+            }
+        };
+
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($this->getStatements());
+
+        return $visitor->getMethodCalls();
+    }
+
+    /**
+     * @param string $methodName
      * @return Node\Expr\StaticCall[]
      */
     public function getStaticCalls(array $className, string $methodName): array
