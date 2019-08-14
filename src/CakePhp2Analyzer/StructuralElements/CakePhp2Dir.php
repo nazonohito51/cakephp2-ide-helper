@@ -6,11 +6,15 @@ namespace CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\FixtureReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\PhpFileReader;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 abstract class CakePhp2Dir
 {
     abstract public function isPlugin(): bool;
     abstract public function getPluginName(): ?string;
+
     protected $appDir;
 
     /**
@@ -125,5 +129,33 @@ abstract class CakePhp2Dir
         }
 
         return $fixtureReaders;
+    }
+
+    public function getPhpFiles()
+    {
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->appDir));
+
+        $phpFiles = [];
+        foreach ($iterator as $fileInfo) {
+            /** @var $fileInfo \SplFileInfo */
+            if ($fileInfo->getExtension() === 'php') {
+                $phpFiles[] = $fileInfo->getRealPath();
+            }
+        }
+
+        return $phpFiles;
+    }
+
+    /**
+     * @return PhpFileReader[]
+     */
+    public function getPhpFileReaders(): array
+    {
+        $phpFileReaders = [];
+        foreach ($this->getPhpFiles() as $phpFile) {
+            $phpFileReaders = new PhpFileReader($phpFile);
+        }
+
+        return $phpFileReaders;
     }
 }
