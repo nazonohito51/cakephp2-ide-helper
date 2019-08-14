@@ -9,7 +9,7 @@
  * description.
  *
  * @property \CakePhp2IdeHelper\Generator hoge
- * @mixin \CakePhp2IdeHelper\SomeBehavior1
+ * @mixin \CakePhp2IdeHelper\SomeBehavior1Behavior
  */
 class SomeModel1 extends AppModel
 {

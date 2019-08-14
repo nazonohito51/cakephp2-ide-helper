@@ -47,7 +47,7 @@ class ModelReaderTest extends TestCase
  * description.
  *
  * @property \CakePhp2IdeHelper\Generator hoge
- * @mixin \CakePhp2IdeHelper\SomeBehavior1
+ * @mixin \CakePhp2IdeHelper\SomeBehavior1Behavior
  */
 PHPDOC;
         $this->assertSame($expected, $modelReader->getPhpDoc());

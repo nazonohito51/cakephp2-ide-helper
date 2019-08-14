@@ -11,9 +11,9 @@ class BehaviorReaderTest extends TestCase
 {
     public function testGetters()
     {
-        $behaviorReader = new BehaviorReader($this->fixtureAppPath('Plugin/SomePlugin1/Model/Behavior/SomeBehavior3.php'), 'SomePlugin1');
+        $behaviorReader = new BehaviorReader($this->fixtureAppPath('Plugin/SomePlugin1/Model/Behavior/SomeBehavior3Behavior.php'), 'SomePlugin1');
 
-        $this->assertSame('SomeBehavior3', $behaviorReader->getBehaviorName());
+        $this->assertSame('SomeBehavior3Behavior', $behaviorReader->getBehaviorName());
         $this->assertTrue($behaviorReader->isPlugin());
         $this->assertSame('SomePlugin1', $behaviorReader->getPluginName());
         $this->assertSame('SomePlugin1.SomeBehavior3', $behaviorReader->getSymbol());
@@ -21,7 +21,7 @@ class BehaviorReaderTest extends TestCase
 
     public function testGetPublicMethods()
     {
-        $behaviorReader = new BehaviorReader($this->fixtureAppPath('Model/Behavior/SomeBehavior1.php'));
+        $behaviorReader = new BehaviorReader($this->fixtureAppPath('Model/Behavior/SomeBehavior1Behavior.php'));
 
         $publicMethods = $behaviorReader->getPublicMethods();
 

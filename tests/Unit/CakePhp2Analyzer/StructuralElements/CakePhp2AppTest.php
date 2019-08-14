@@ -42,7 +42,7 @@ class CakePhp2AppTest extends TestCase
         $behaviorReaders = $app->getBehaviorReaders();
 
         $this->assertCount(2, $behaviorReaders);
-        $this->assertSame(['SomeBehavior1', 'SomeBehavior2'], array_map(function (BehaviorReader $behaviorReader) {
+        $this->assertSame(['SomeBehavior1Behavior', 'SomeBehavior2Behavior'], array_map(function (BehaviorReader $behaviorReader) {
             return $behaviorReader->getBehaviorName();
         }, $behaviorReaders));
     }
