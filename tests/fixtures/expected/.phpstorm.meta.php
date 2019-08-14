@@ -42,6 +42,21 @@ namespace PHPSTORM_META {
         'neighbors',
     );
     expectedArguments(
+        \Model::find(),
+        1,
+        '[
+            "conditions" => null,
+            "fields" => null,
+            "joins" => [],
+            "limit" => null,
+            "offset" => null,
+            "order" => null,
+            "page" => 1,
+            "group" => null,
+            "callbacks" => true,
+        ]',
+    );
+    expectedArguments(
         \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withRead(),
         0,
         'function (Model $model) {

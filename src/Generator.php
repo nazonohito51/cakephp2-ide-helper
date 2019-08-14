@@ -32,7 +32,8 @@ class Generator
         $expectArgumentsEntries = [
             $this->createClassRegistryExpectArgument(),
             $this->createFabricateExpectArgument(),
-            $this->createModelMethodArgument(),
+            $this->createModelFindFirstArgument(),
+            $this->createModelFindSecondArgument(),
             $this->createSwitchableDataSourceWithReadArgument(),
             $this->createSwitchableDataSourceWithWriteArgument(),
         ];
@@ -81,12 +82,30 @@ class Generator
         return $entry;
     }
 
-    private function createModelMethodArgument(): ExpectArgumentsEntry
+    private function createModelFindFirstArgument(): ExpectArgumentsEntry
     {
         $entry = new ExpectArgumentsEntry('\\Model::find()', 0);
         foreach (['first', 'count', 'all', 'list', 'threaded', 'neighbors'] as $arg) {
             $entry->add($arg);
         }
+
+        return $entry;
+    }
+
+    private function createModelFindSecondArgument(): ExpectArgumentsEntry
+    {
+        $entry = new ExpectArgumentsEntry('\\Model::find()', 1);
+        $entry->add('[
+            "conditions" => null,
+            "fields" => null,
+            "joins" => [],
+            "limit" => null,
+            "offset" => null,
+            "order" => null,
+            "page" => 1,
+            "group" => null,
+            "callbacks" => true,
+        ]');
 
         return $entry;
     }
