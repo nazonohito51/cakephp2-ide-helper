@@ -4,13 +4,11 @@ declare(strict_types=1);
 namespace CakePhp2IdeHelper\PhpParser;
 
 use CakePhp2IdeHelper\PhpParser\Visitors\GetTargetVisitor;
-use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
-use PhpParser\PrettyPrinter\Standard;
 
 class Ast
 {
@@ -20,6 +18,8 @@ class Ast
      * @var Stmt[]
      */
     private $statements;
+
+    private $classLike;
 
     public function __construct(string $path)
     {
@@ -36,17 +36,26 @@ class Ast
         return $this->statements;
     }
 
+    private function traverse(NodeVisitorAbstract $visitor): void
+    {
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($this->getStatements());
+    }
+
     public function getClassLike(): Stmt\ClassLike
     {
+        if (!is_null($this->classLike)) {
+            return $this->classLike;
+        }
+
         $visitor = new GetTargetVisitor($this->file->getBasename('.php'), static function (Node $node): bool {
             return $node instanceof Stmt\ClassLike;
         });
 
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($this->getStatements());
+        $this->traverse($visitor);
 
-        return $visitor->getFirstTarget();
+        return $this->classLike = $visitor->getFirstTarget();
     }
 
     public function getProperty(string $propertyName): ?Stmt\PropertyProperty
@@ -54,13 +63,8 @@ class Ast
         $visitor = new GetTargetVisitor($this->file->getBasename('.php'), static function (Node $node) use ($propertyName): bool {
             return ($node instanceof Stmt\PropertyProperty && $node->name->toString() === $propertyName);
         });
-//        $property = (new NodeFinder)->findFirst($this->statements, function(Node $node) use ($propertyName) {
-//            return $node instanceof Node\Stmt\PropertyProperty && $node->name->toString() === $propertyName;
-//        });
 
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($this->getStatements());
+        $this->traverse($visitor);
 
         return $visitor->getFirstTarget();
     }
@@ -74,9 +78,7 @@ class Ast
             return $node instanceof Stmt\ClassMethod && $node->isPublic();
         });
 
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($this->getStatements());
+        $this->traverse($visitor);
 
         return $visitor->getTargets();
     }
@@ -112,9 +114,7 @@ class Ast
             }
         };
 
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($this->getStatements());
+        $this->traverse($visitor);
 
         return $visitor->getMethodCalls();
     }
@@ -137,56 +137,8 @@ class Ast
             return false;
         });
 
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($this->getStatements());
+        $this->traverse($visitor);
 
         return $visitor->getTargets();
-    }
-
-    public function fixComment()
-    {
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($this->getVisitor());
-        $newAst = $traverser->traverse($this->getStatements());
-
-        return (new Standard)->prettyPrintFile($newAst);
-    }
-
-    public function getVisitor(): NodeVisitorAbstract
-    {
-        return new class($this->file->getBasename('.php')) extends NodeVisitorAbstract {
-            private $targetClassName;
-
-            public function __construct(string $targetClassName)
-            {
-                $this->targetClassName = $targetClassName;
-            }
-
-            public function leaveNode(Node $node)
-            {
-                if ($this->isTargetClass($node)) {
-                    /** @var Stmt\ClassLike $node */
-                    $docComment = $node->getDocComment();
-                    $comments = explode("\n", $docComment->getText());
-                    $lastLine = array_pop($comments);
-                    $comments[] = '@property Hoge $hoge';
-                    $comments[] = $lastLine;
-                    $node->setDocComment(new Doc(implode("\n", $comments), $docComment->getLine(), $docComment->getFilePos(), $docComment->getTokenPos()));
-                }
-
-                return null;
-            }
-
-            public function enterNode(Node $node)
-            {
-                //
-            }
-
-            private function isTargetClass(Node $node)
-            {
-                return ($node instanceof Stmt\ClassLike && $node->name === $this->targetClassName);
-            }
-        };
     }
 }
