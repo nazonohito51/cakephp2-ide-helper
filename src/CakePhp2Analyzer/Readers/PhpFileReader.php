@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace CakePhp2IdeHelper\CakePhp2Analyzer\Readers;
 
 use CakePhp2IdeHelper\PhpParser\Ast;
-use PhpParser\Node\Expr\Array_;
-use PhpParser\Node\Expr\ArrayItem;
-use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Expr\MethodCall;
 
 class PhpFileReader
 {
@@ -36,5 +34,14 @@ class PhpFileReader
     public function getContent(): string
     {
         return file_get_contents($this->getRealPath());
+    }
+
+    /**
+     * @param string $methodName
+     * @return MethodCall[]
+     */
+    public function getCallMethods(string $methodName): array
+    {
+        return $this->ast->getMethodCalls($methodName);
     }
 }
