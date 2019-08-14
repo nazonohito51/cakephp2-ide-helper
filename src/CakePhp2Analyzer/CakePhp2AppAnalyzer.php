@@ -5,8 +5,10 @@ namespace CakePhp2IdeHelper\CakePhp2Analyzer;
 
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\FixtureReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\PhpFileReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
+use PhpParser\Node\Expr\MethodCall;
 
 class CakePhp2AppAnalyzer
 {
@@ -80,5 +82,31 @@ class CakePhp2AppAnalyzer
         }
 
         return $this->fixtureReaders = $fixtureReaders;
+    }
+
+    /**
+     * @return MethodCall[]
+     */
+    public function searchUnloadMethod(): array
+    {
+        $phpFiles = $this->app->getPhpFiles();
+        foreach ($this->app->getPlugins() as $plugin) {
+            foreach ($plugin->getPhpFiles() as $phpFile) {
+                if (!in_array($phpFile, $phpFiles, true)) {
+                    $phpFiles[] = $phpFile;
+                }
+            }
+        }
+
+        $ret = [];
+        foreach ($phpFiles as $phpFile) {
+            $phpFileReader = new PhpFileReader($phpFile);
+            if (strpos($phpFileReader->getContent(), 'unload') !== false) {
+                $methodCalls = $phpFileReader->getCallMethods('unload');
+                $ret = array_merge($ret, $methodCalls);
+            }
+        }
+
+        return $ret;
     }
 }

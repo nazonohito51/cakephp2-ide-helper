@@ -8,6 +8,8 @@ use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\FixtureReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Scalar\String_;
 use Tests\TestCase;
 
 class CakePhp2AppAnalyzerTest extends TestCase
@@ -46,5 +48,25 @@ class CakePhp2AppAnalyzerTest extends TestCase
         $this->assertSame([['SomeModel1', 'SomeModel1_Extends'], ['SomeModel2', 'SomeModel2_extends']], array_map(function (FixtureReader $reader) {
             return $reader->getFabricateDefineNames();
         }, $fixtureReaders));
+    }
+
+    public function testSearchUnloadMethod()
+    {
+        $app = new CakePhp2App($this->fixtureAppPath());
+        $app->addModelDir($this->fixtureAppPath('AdditionalModel'));
+        $analyzer = new CakePhp2AppAnalyzer($app);
+
+        $methodCalls = $analyzer->searchUnloadMethod();
+
+        $this->assertCount(1, $methodCalls);
+        $this->assertSame(['SomeBehavior2'], array_map(function (MethodCall $methodCall) {
+            if (isset($methodCall->args[0])) {
+                if ($methodCall->args[0]->value instanceof String_) {
+                    $behaviorName = $methodCall->args[0]->value->value;
+                    return $behaviorName;
+                }
+            }
+            return '';
+        }, $methodCalls));
     }
 }
