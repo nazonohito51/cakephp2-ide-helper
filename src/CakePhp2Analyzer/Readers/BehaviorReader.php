@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace CakePhp2IdeHelper\CakePhp2Analyzer\Readers;
 
-use CakePhp2IdeHelper\PhpParser\Ast;
-use PhpParser\Comment\Doc;
 use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\PrettyPrinter\Standard;
 
 class BehaviorReader extends PhpFileReader
 {
@@ -58,7 +55,7 @@ class BehaviorReader extends PhpFileReader
         $definedMethods = ['setup', 'cleanup', 'beforeFind', 'afterFind', 'beforeValidate', 'afterValidate', 'beforeSave', 'afterSave', 'beforeDelete', 'afterDelete', 'onError'];
         foreach ($this->ast->getPublicMethods() as $publicMethod) {
             if (!in_array($publicMethod->name->toString(), $definedMethods)) {
-                $ret[] = clone $publicMethod;
+                $ret[] = $publicMethod;
             }
         }
 

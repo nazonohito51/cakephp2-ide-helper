@@ -13,7 +13,6 @@ use CakePhp2IdeHelper\PhpStormMeta\IdeHelperClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperContent;
 use CakePhp2IdeHelper\PhpStormMeta\OverRideEntry;
 use CakePhp2IdeHelper\PhpStormMeta\UpdateModelDocEntry;
-use PhpParser\Comment\Doc;
 
 class Generator
 {
@@ -136,14 +135,6 @@ class Generator
         foreach ($this->analyzer->getBehaviorReaders() as $behaviorReader) {
             $classEntry = new IdeHelperClassEntry($behaviorReader->getBehaviorName());
             foreach ($behaviorReader->getPublicMethods() as $method) {
-                // remove first argument
-                array_shift($method->params);
-                // remove method body
-                $method->stmts = [];
-                // create phpdoc
-                $fqsen = "\\{$behaviorReader->getBehaviorName()}::{$method->name->toString()}()";
-                $method->setDocComment(new Doc("/**\n * @see {$fqsen}\n */"));
-
                 $classEntry->addMethod($method);
             }
             $content->addEntry($classEntry);
