@@ -10,7 +10,7 @@
 - [x] model property in controller
 - [ ] getDataSource
 - [x] Model::find('first', 'count' ...)
-- [ ] Model::find('', ['condition'...])
+- [x] Model::find('', ['condition'...])
 - [x] withRead argument
 - [ ] ignore unload behavior
 - [ ] disable behavior extend
