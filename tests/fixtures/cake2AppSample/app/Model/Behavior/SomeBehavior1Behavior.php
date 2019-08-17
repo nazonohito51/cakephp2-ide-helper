@@ -12,7 +12,7 @@ class SomeBehavior1Behavior extends ModelBehavior
         return 1;
     }
 
-    public function someBehavior1Method3(Model $model, string $arg1, string $args2): string
+    public function someBehavior1Method3(Model $Model, string $arg1, string $args2): string
     {
         return 'str';
     }

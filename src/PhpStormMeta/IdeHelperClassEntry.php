@@ -33,7 +33,9 @@ class IdeHelperClassEntry
 
     public function addMethod(ClassMethod $classMethod): void
     {
-        $this->classMethods[] = clone $classMethod;
+        if (count($classMethod->params) > 0) {
+            $this->classMethods[] = clone $classMethod;
+        }
     }
 
     public function createStmt(): Class_
@@ -42,19 +44,21 @@ class IdeHelperClassEntry
         $classStmt = $builderFactory->class($this->className);
 
         foreach ($this->classMethods as $classMethod) {
+            // remove first argument
+            $firstArg = array_shift($classMethod->params);
+
             $variable = $builderFactory->var('behavior');
             $methodCall = $builderFactory->methodCall($variable, $classMethod->name->toString(), []);
+            $methodCall->args[] = $firstArg->var;
             foreach ($classMethod->params as $param) {
                 $methodCall->args[] = $param->var;
             }
             $returnStmt = new Return_($methodCall);
             $returnStmt->setDocComment(new Doc("/**
             * @var \\{$this->getClassName()} \$behavior
-            * @var \\Model \$model
+            * @var \\Model \${$firstArg->var->name}
             */"));
 
-            // remove first argument
-            $firstArg = array_shift($classMethod->params);
             // remove method body
             $classMethod->stmts = [];
 

@@ -24,9 +24,9 @@ class SomeBehavior1Behavior
     {
         /**
          * @var \SomeBehavior1Behavior $behavior
-         * @var \Model $model
+         * @var \Model $Model
          */
-        return $behavior->someBehavior1Method3($model, $arg1, $args2);
+        return $behavior->someBehavior1Method3($Model, $arg1, $args2);
     }
 }
 class SomeBehavior2Behavior
