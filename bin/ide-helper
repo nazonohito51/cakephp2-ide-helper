@@ -16,6 +16,6 @@ require_once $composerAutoloadFile;
 
 $application = new \Symfony\Component\Console\Application('CakePHP2 IDE Helper');
 $application->add(new \CakePhp2IdeHelper\Command\GenerateMetaCommand());
-$application->add(new \CakePhp2IdeHelper\Command\GenerateHelperCommand());
+$application->add(new \CakePhp2IdeHelper\Command\GenerateIdeHelperCommand());
 $application->add(new \CakePhp2IdeHelper\Command\GenerateModelDocCommand());
 $application->run();

@@ -5,7 +5,7 @@ namespace CakePhp2IdeHelper\Command;
 
 use CakePhp2IdeHelper\Generator;
 
-class GenerateHelperCommand extends AbstractIdeHelperCommand
+class GenerateIdeHelperCommand extends AbstractIdeHelperCommand
 {
     protected function getCommandName(): string
     {
