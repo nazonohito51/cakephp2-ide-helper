@@ -109,4 +109,29 @@ class CakePhp2AppAnalyzer
 
         return $ret;
     }
+
+    private function getModelReaderFromName(string $modelName): ?ModelReader
+    {
+        foreach ($this->getModelReaders() as $modelReader) {
+            if ($modelReader->getModelName() === $modelName) {
+                return $modelReader;
+            }
+        }
+
+        return null;
+    }
+
+    public function buildModelExtendsGraph(): ModelExtendsGraph
+    {
+        $graph = new ModelExtendsGraph();
+        foreach ($this->getModelReaders() as $modelReader) {
+            if ($parentModelName = $modelReader->getParentModelName()) {
+                if ($parentReader = $this->getModelReaderFromName($parentModelName)) {
+                    $graph->addExtends($modelReader, $parentReader);
+                }
+            }
+        }
+
+        return $graph;
+    }
 }

@@ -69,4 +69,26 @@ class CakePhp2AppAnalyzerTest extends TestCase
             return '';
         }, $methodCalls));
     }
+
+    public function testBuildModelExtendsGraph()
+    {
+        $app = new CakePhp2App($this->fixtureAppPath());
+        $app->addModelDir($this->fixtureAppPath('AdditionalModel'));
+        $analyzer = new CakePhp2AppAnalyzer($app);
+
+        $graph = $analyzer->buildModelExtendsGraph();
+        $model1Parents = $graph->getParents(new ModelReader($this->fixtureAppPath('Model/SomeModel1.php')));
+        $model3Parents = $graph->getParents(new ModelReader($this->fixtureAppPath('Plugin/SomePlugin1/Model/SomeModel3.php')));
+        $model5Parents = $graph->getParents(new ModelReader($this->fixtureAppPath('AdditionalModel/SomeModel5.php')));
+
+        $this->assertSame(['AppModel'], array_map(function (ModelReader $modelReader) {
+            return $modelReader->getModelName();
+        }, $model1Parents));
+        $this->assertSame(['AppModel'], array_map(function (ModelReader $modelReader) {
+            return $modelReader->getModelName();
+        }, $model3Parents));
+        $this->assertSame(['SomeModel1', 'AppModel'], array_map(function (ModelReader $modelReader) {
+            return $modelReader->getModelName();
+        }, $model5Parents));
+    }
 }

@@ -2,7 +2,7 @@
 
 \App::uses('AppModel', 'Model');
 
-class SomeModel5 extends AppModel
+class SomeModel5 extends SomeModel1
 {
     public $actsAs = [];
 

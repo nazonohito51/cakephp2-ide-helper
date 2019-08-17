@@ -6,7 +6,9 @@ namespace CakePhp2IdeHelper\CakePhp2Analyzer\Readers;
 use CakePhp2IdeHelper\PhpParser\Ast;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
+use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Stmt\Class_;
 
 class ModelReader extends PhpFileReader
 {
@@ -66,6 +68,19 @@ class ModelReader extends PhpFileReader
         }
 
         return $behaviorSymbols;
+    }
+
+    public function getParentModelName(): ?string
+    {
+        $classLike = $this->ast->getClassLike();
+        if ($classLike instanceof Class_ && !is_null($classLike->extends)) {
+            $parent = $classLike->extends;
+            if ($parent instanceof Name && $parent->toString() !== 'CakeObject') {
+                return $parent->toString();
+            }
+        }
+
+        return null;
     }
 
     public function havePhpDoc(): bool
