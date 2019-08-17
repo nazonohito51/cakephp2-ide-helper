@@ -4,6 +4,8 @@
 - [x] read actsAs from Model
 - [x] read public methods from Behavior
 - [x] update phpdoc on Model with diff(use str_replace)
+- [ ] analyze return type of Behavior
+- [ ] deprecate Behavior method by model extends graph
 - [x] ClassRegistry argument helper
 - [x] Fabricate argument helper
 - [ ] fixtures argument helper(phpstorm meta)
@@ -14,3 +16,4 @@
 - [x] withRead argument
 - [ ] ignore unload behavior
 - [ ] disable behavior extend
+- [ ] Controller uses property
