@@ -16,6 +16,7 @@ class CakePhp2AppAnalyzer
     private $modelReaders;
     private $behaviorReaders;
     private $fixtureReaders;
+    private $modelExtendsGraph;
 
     public function __construct(CakePhp2App $app)
     {
@@ -123,6 +124,10 @@ class CakePhp2AppAnalyzer
 
     public function buildModelExtendsGraph(): ModelExtendsGraph
     {
+        if ($this->modelExtendsGraph) {
+            return $this->modelExtendsGraph;
+        }
+
         $graph = new ModelExtendsGraph();
         foreach ($this->getModelReaders() as $modelReader) {
             if ($parentModelName = $modelReader->getParentModelName()) {
@@ -132,6 +137,6 @@ class CakePhp2AppAnalyzer
             }
         }
 
-        return $graph;
+        return $this->modelExtendsGraph = $graph;
     }
 }
