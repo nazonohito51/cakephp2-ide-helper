@@ -76,7 +76,7 @@ class CakePhp2AppAnalyzerTest extends TestCase
         $app->addModelDir($this->fixtureAppPath('AdditionalModel'));
         $analyzer = new CakePhp2AppAnalyzer($app);
 
-        $graph = $analyzer->buildModelExtendsGraph();
+        $graph = $analyzer->getModelExtendsGraph();
         $model1Parents = $graph->getParents(new ModelReader($this->fixtureAppPath('Model/SomeModel1.php')));
         $model3Parents = $graph->getParents(new ModelReader($this->fixtureAppPath('Plugin/SomePlugin1/Model/SomeModel3.php')));
         $model5Parents = $graph->getParents(new ModelReader($this->fixtureAppPath('AdditionalModel/SomeModel5.php')));
@@ -90,5 +90,17 @@ class CakePhp2AppAnalyzerTest extends TestCase
         $this->assertSame(['SomeModel1', 'AppModel'], array_map(function (ModelReader $modelReader) {
             return $modelReader->getModelName();
         }, $model5Parents));
+    }
+
+    public function testAnalyzeBehaviorsOf()
+    {
+        $analyzer = new CakePhp2AppAnalyzer(new CakePhp2App($this->fixturePath('complexBehaviorApp/app')));
+        $modelReader1 = new ModelReader($this->fixturePath('complexBehaviorApp/app/Model/ComplexModel1.php'));
+        $modelReader2 = new ModelReader($this->fixturePath('complexBehaviorApp/app/Model/ComplexModel2.php'));
+        $modelReader3 = new ModelReader($this->fixturePath('complexBehaviorApp/app/Model/ComplexModel3.php'));
+
+        $this->assertSame(['Complex1', 'Complex2'], $analyzer->analyzeBehaviorsOf($modelReader1));
+        $this->assertSame(['Complex1', 'Complex2', 'Complex3'], $analyzer->analyzeBehaviorsOf($modelReader2));
+        $this->assertSame(['Complex1', 'Complex3', 'Complex4'], $analyzer->analyzeBehaviorsOf($modelReader3));
     }
 }

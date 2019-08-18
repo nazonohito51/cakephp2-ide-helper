@@ -122,9 +122,9 @@ class CakePhp2AppAnalyzer
         return null;
     }
 
-    public function buildModelExtendsGraph(): ModelExtendsGraph
+    public function getModelExtendsGraph(): ModelExtendsGraph
     {
-        if ($this->modelExtendsGraph) {
+        if (!is_null($this->modelExtendsGraph)) {
             return $this->modelExtendsGraph;
         }
 
@@ -138,5 +138,34 @@ class CakePhp2AppAnalyzer
         }
 
         return $this->modelExtendsGraph = $graph;
+    }
+
+    /**
+     * @param ModelReader $modelReader
+     * @return string[]
+     */
+    public function analyzeBehaviorsOf(ModelReader $modelReader): array
+    {
+        $isAppModelSubClass = false;
+        $behaviorSymbols = $modelReader->getBehaviorSymbols();
+
+        $parents = $this->getModelExtendsGraph()->getParents($modelReader);
+        foreach ($parents as $parent) {
+            if ($parent->getModelName() === 'AppModel') {
+                $isAppModelSubClass = true;
+                break;
+            }
+        }
+
+        if ($isAppModelSubClass) {
+            if ($parents[0]->getModelName() !== 'AppModel') {
+                $behaviorSymbols = array_merge($parents[0]->getBehaviorSymbols(), $behaviorSymbols);
+            }
+
+            $appModel = $this->getModelReaderFromName('AppModel');
+            $behaviorSymbols = array_merge($appModel->getBehaviorSymbols(), $behaviorSymbols);
+        }
+
+        return $behaviorSymbols;
     }
 }
