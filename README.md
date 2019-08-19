@@ -4,8 +4,9 @@
 - [x] read actsAs from Model
 - [x] read public methods from Behavior
 - [x] update phpdoc on Model with diff(use str_replace)
-- [ ] analyze return type of Behavior
+- [x] analyze return type of Behavior
 - [ ] deprecate Behavior method by model extends graph
+- [ ] consider git manage files
 - [x] ClassRegistry argument helper
 - [x] Fabricate argument helper
 - [ ] fixtures argument helper(phpstorm meta)

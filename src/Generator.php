@@ -11,6 +11,7 @@ use CakePhp2IdeHelper\Exception\FailedUpdatingPhpDocException;
 use CakePhp2IdeHelper\PhpStormMeta\ExpectArgumentsEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperContent;
+use CakePhp2IdeHelper\PhpStormMeta\IdeHelperDeprecateClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\OverRideEntry;
 use CakePhp2IdeHelper\PhpStormMeta\UpdateModelDocEntry;
 
@@ -134,10 +135,13 @@ class Generator
         $content = new IdeHelperContent();
         foreach ($this->analyzer->getBehaviorReaders() as $behaviorReader) {
             $classEntry = new IdeHelperClassEntry($behaviorReader->getBehaviorName());
+            $deprecateClassEntry = new IdeHelperDeprecateClassEntry($behaviorReader->getBehaviorName());
             foreach ($behaviorReader->getPublicMethods() as $method) {
                 $classEntry->addMethod($method);
+                $deprecateClassEntry->addMethod($method);
             }
             $content->addEntry($classEntry);
+            $content->addEntry($deprecateClassEntry);
         }
 
         return $content;
@@ -152,7 +156,7 @@ class Generator
 
         $ret = [];
         foreach ($this->analyzer->getModelReaders() as $modelReader) {
-            if (!empty($modelReader->getBehaviorSymbols())) {
+            if (!empty($this->analyzer->analyzeBehaviorsOf($modelReader))) {
                 try {
                     $ret[] = $this->createModelDocEntry($modelReader, $ideHelperContent);
                 } catch (FailedUpdatingPhpDocException $e) {
@@ -168,11 +172,25 @@ class Generator
     {
         $originalDocComment = $modelReader->getPhpDoc() ?? '';
         $replaceDoc = new DocBlock($originalDocComment);
+        $targetBehaviors = $this->analyzer->analyzeBehaviorsOf($modelReader);
 
-        foreach ($modelReader->getBehaviorSymbols() as $behaviorSymbol) {
+        $parentBehaviors = [];
+        foreach ($this->analyzer->getModelExtendsGraph()->getParents($modelReader) as $parent) {
+            foreach ($parent->getBehaviorSymbols() as $behaviorSymbol) {
+                if (!in_array($behaviorSymbol, $parentBehaviors, true)) {
+                    $parentBehaviors[] = $behaviorSymbol;
+                }
+            }
+        }
+
+        foreach ($targetBehaviors as $behaviorSymbol) {
+            if (in_array($behaviorSymbol, $parentBehaviors, true)) {
+                continue;
+            }
+
             if ($behaviorReader = $this->analyzer->searchBehaviorFromSymbol($behaviorSymbol)) {
-                $className = $content->getMockClassFromOriginalClass($behaviorReader->getBehaviorName());
-                $tag = Tag::createInstance("@mixin {$className} Added by cakephp2-ide-helper", $replaceDoc);
+                $mockClassName = $content->getMockClassFromOriginalClass($behaviorReader->getBehaviorName());
+                $tag = Tag::createInstance("@mixin {$mockClassName} Added by cakephp2-ide-helper", $replaceDoc);
 
                 $exist = false;
                 foreach ($replaceDoc->getTags() as $existTag) {
@@ -185,6 +203,10 @@ class Generator
                     $replaceDoc->appendTag($tag);
                 }
             }
+        }
+
+        foreach (array_diff($parentBehaviors, $targetBehaviors) as $shouldDeprecateBehavior) {
+
         }
 
         return new UpdateModelDocEntry($modelReader, $replaceDoc);

@@ -13,22 +13,24 @@ use PhpParser\PrettyPrinter\Standard;
 class IdeHelperClassEntry
 {
     private $className;
-    private $prettyPrinter;
-
-    /**
-     * @var ClassMethod[]
-     */
     private $classMethods = [];
 
     public function __construct(string $className)
     {
         $this->className = $className;
-        $this->prettyPrinter = new Standard();
     }
 
     public function getClassName(): string
     {
         return $this->className;
+    }
+
+    /**
+     * @return ClassMethod[]
+     */
+    public function getMethods(): array
+    {
+        return $this->classMethods;
     }
 
     public function addMethod(ClassMethod $classMethod): void
@@ -41,9 +43,9 @@ class IdeHelperClassEntry
     public function createStmt(): Class_
     {
         $builderFactory = new BuilderFactory;
-        $classStmt = $builderFactory->class($this->className);
+        $classStmt = $builderFactory->class($this->getClassName());
 
-        foreach ($this->classMethods as $classMethod) {
+        foreach ($this->getMethods() as $classMethod) {
             // remove first argument
             $firstArg = array_shift($classMethod->params);
 
@@ -76,8 +78,8 @@ class IdeHelperClassEntry
     public function getSymbols(): array
     {
         $ret = [];
-        foreach ($this->classMethods as $classMethod) {
-            $ret[] = "\\{$this->className}::{$classMethod->name->toString()}()";
+        foreach ($this->getMethods() as $classMethod) {
+            $ret[] = "\\{$this->getClassName()}::{$classMethod->name->toString()}()";
         }
 
         return $ret;

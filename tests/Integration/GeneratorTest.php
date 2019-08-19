@@ -40,4 +40,16 @@ class GeneratorTest extends TestCase
         $this->assertSame(file_get_contents($this->fixturePath('expected/SomeModel3.php')), $ret[3]->getReplaceModelContent());
         $this->assertSame(file_get_contents($this->fixturePath('expected/SomeModel4.php')), $ret[4]->getReplaceModelContent());
     }
+
+    public function testGenerateModelDocEntriesWhenComplexModel()
+    {
+        $app = new CakePhp2App($this->fixturePath('complexBehaviorApp/app'));
+        $generator = new Generator(__DIR__ . '/../tmp/', $app);
+        $ret = $generator->generateModelDocEntries();
+
+        $this->assertCount(4, $ret);
+        $this->assertSame(file_get_contents($this->fixturePath('expected/ComplexModel1.php')), $ret[1]->getReplaceModelContent());
+        $this->assertSame(file_get_contents($this->fixturePath('expected/ComplexModel2.php')), $ret[2]->getReplaceModelContent());
+        $this->assertSame(file_get_contents($this->fixturePath('expected/ComplexModel3.php')), $ret[3]->getReplaceModelContent());
+    }
 }
