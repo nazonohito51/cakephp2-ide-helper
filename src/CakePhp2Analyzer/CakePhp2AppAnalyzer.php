@@ -166,6 +166,6 @@ class CakePhp2AppAnalyzer
             $behaviorSymbols = array_merge($appModel->getBehaviorSymbols(), $behaviorSymbols);
         }
 
-        return $behaviorSymbols;
+        return array_values(array_unique($behaviorSymbols));
     }
 }

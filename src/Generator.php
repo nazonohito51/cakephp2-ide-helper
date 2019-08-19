@@ -172,22 +172,8 @@ class Generator
     {
         $originalDocComment = $modelReader->getPhpDoc() ?? '';
         $replaceDoc = new DocBlock($originalDocComment);
-        $targetBehaviors = $this->analyzer->analyzeBehaviorsOf($modelReader);
 
-        $parentBehaviors = [];
-        foreach ($this->analyzer->getModelExtendsGraph()->getParents($modelReader) as $parent) {
-            foreach ($parent->getBehaviorSymbols() as $behaviorSymbol) {
-                if (!in_array($behaviorSymbol, $parentBehaviors, true)) {
-                    $parentBehaviors[] = $behaviorSymbol;
-                }
-            }
-        }
-
-        foreach ($targetBehaviors as $behaviorSymbol) {
-            if (in_array($behaviorSymbol, $parentBehaviors, true)) {
-                continue;
-            }
-
+        foreach ($modelReader->getBehaviorSymbols() as $behaviorSymbol) {
             if ($behaviorReader = $this->analyzer->searchBehaviorFromSymbol($behaviorSymbol)) {
                 $mockClassName = $content->getMockClassFromOriginalClass($behaviorReader->getBehaviorName());
                 $tag = Tag::createInstance("@mixin {$mockClassName} Added by cakephp2-ide-helper", $replaceDoc);
@@ -205,33 +191,21 @@ class Generator
             }
         }
 
-        foreach (array_diff($parentBehaviors, $targetBehaviors) as $shouldDeprecateBehavior) {
+        $parentBehaviors = $this->analyzer->getModelExtendsGraph()->getParentBehaviors($modelReader);
+        $targetRealBehaviors = $this->analyzer->analyzeBehaviorsOf($modelReader);
+        $expectedExtendsBehaviors = array_diff($targetRealBehaviors, $modelReader->getBehaviorSymbols());
+        foreach (array_diff($parentBehaviors, $expectedExtendsBehaviors) as $shouldDeprecateBehaviorSymbol) {
+            if (in_array($shouldDeprecateBehaviorSymbol, $modelReader->getBehaviorSymbols(), true)) {
+                continue;
+            }
 
+            $behaviorReader = $this->analyzer->searchBehaviorFromSymbol($shouldDeprecateBehaviorSymbol);
+            $mockClassName = $content->getDeprecateMockClassFromOriginalClass($behaviorReader->getBehaviorName());
+            $tag = Tag::createInstance("@mixin {$mockClassName} Added by cakephp2-ide-helper", $replaceDoc);
+            $replaceDoc->appendTag($tag);
         }
 
         return new UpdateModelDocEntry($modelReader, $replaceDoc);
-
-//        $replaceDocComment = (new DocBlockSerializer())->getDocComment($replaceDoc);
-//        if (empty($replaceDoc->getShortDescription()) && empty($replaceDoc->getLongDescription()->getContents())) {
-//            // remove summary, description
-//            $replaceDocComment = str_replace("/**\n * \n * ", '/**', $replaceDocComment);
-//        }
-
-//        $file = new \SplFileObject($modelReader->getRealPath(), 'w');
-//        $originalContent = $modelReader->getContent();
-//        if (!empty($originalDocComment)) {
-//            $replacedContents = str_replace($originalDocComment, $replaceDocComment, $originalContent);
-//        } else {
-//            $needle = "class {$modelReader->getModelName()}";
-//            $replace = "{$replaceDocComment}\nclass {$modelReader->getModelName()}";
-//            $pos = strpos($originalContent, $needle);
-//            if ($pos === false) {
-//                throw new FailedUpdatingPhpDocException($file->getRealPath());
-//            }
-//            $replacedContents = substr_replace($originalContent, $replace, $pos, strlen($needle));
-//        }
-//
-//        $file->fwrite($replacedContents);
     }
 
     private function getMetaFileTemplatePath(): string

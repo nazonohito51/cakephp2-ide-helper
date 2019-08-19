@@ -52,6 +52,20 @@ class ModelExtendsGraph
         return $vertex;
     }
 
+    public function getParentBehaviors(ModelReader $modelReader): array
+    {
+        $parentBehaviors = [];
+        foreach ($this->getParents($modelReader) as $parent) {
+            foreach ($parent->getBehaviorSymbols() as $behaviorSymbol) {
+                if (!in_array($behaviorSymbol, $parentBehaviors, true)) {
+                    $parentBehaviors[] = $behaviorSymbol;
+                }
+            }
+        }
+
+        return $parentBehaviors;
+    }
+
     /**
      * @param ModelReader $modelReader
      * @return ModelReader[]

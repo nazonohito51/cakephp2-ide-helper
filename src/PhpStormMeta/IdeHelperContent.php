@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace CakePhp2IdeHelper\PhpStormMeta;
 
 use PhpParser\BuilderFactory;
-use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\PrettyPrinter\Standard;
 
 class IdeHelperContent
@@ -23,6 +22,19 @@ class IdeHelperContent
 
     public function getMockClassFromOriginalClass(string $className): ?string
     {
+        foreach ($this->entries as $entry) {
+            if ($entry->getClassName() === $className) {
+                $namespace = self::NAMESPACE;
+                return "\\{$namespace}\\$className";
+            }
+        }
+
+        return null;
+    }
+
+    public function getDeprecateMockClassFromOriginalClass(string $className): ?string
+    {
+        $className = 'Deprecate' . $className;
         foreach ($this->entries as $entry) {
             if ($entry->getClassName() === $className) {
                 $namespace = self::NAMESPACE;
