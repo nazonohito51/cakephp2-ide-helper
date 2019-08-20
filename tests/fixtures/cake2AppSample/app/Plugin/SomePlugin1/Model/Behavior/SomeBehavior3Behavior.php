@@ -1,6 +1,6 @@
 <?php
 
-class SomeBehavior3Behavior extends ModelBehavior
+class SomeBehavior3Behavior extends SomeBehavior1Behavior
 {
     public function someBehavior3Method1(Model $model, bool $arg1, bool $args2): bool
     {

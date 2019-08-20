@@ -13,16 +13,23 @@ use PhpParser\PrettyPrinter\Standard;
 class IdeHelperClassEntry
 {
     private $className;
+    private $parentClassName;
     private $classMethods = [];
 
-    public function __construct(string $className)
+    public function __construct(string $className, string $parentClassName = null)
     {
         $this->className = $className;
+        $this->parentClassName = $parentClassName;
     }
 
     public function getClassName(): string
     {
         return $this->className;
+    }
+
+    public function getParentClassName(): ?string
+    {
+        return $this->parentClassName;
     }
 
     /**
@@ -44,6 +51,9 @@ class IdeHelperClassEntry
     {
         $builderFactory = new BuilderFactory;
         $classStmt = $builderFactory->class($this->getClassName());
+        if (!is_null($this->getParentClassName())) {
+            $classStmt->extend($this->getParentClassName());
+        }
 
         foreach ($this->getMethods() as $classMethod) {
             // remove first argument

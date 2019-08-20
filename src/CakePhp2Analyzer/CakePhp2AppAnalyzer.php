@@ -17,6 +17,7 @@ class CakePhp2AppAnalyzer
     private $behaviorReaders;
     private $fixtureReaders;
     private $modelExtendsGraph;
+    private $behaviorExtendsGraph;
 
     public function __construct(CakePhp2App $app)
     {
@@ -122,6 +123,17 @@ class CakePhp2AppAnalyzer
         return null;
     }
 
+    private function getBehaviorReaderFromName(string $behaviorName): ?BehaviorReader
+    {
+        foreach ($this->getBehaviorReaders() as $behaviorReader) {
+            if ($behaviorReader->getBehaviorName() === $behaviorName) {
+                return $behaviorReader;
+            }
+        }
+
+        return null;
+    }
+
     public function getModelExtendsGraph(): ModelExtendsGraph
     {
         if (!is_null($this->modelExtendsGraph)) {
@@ -138,6 +150,24 @@ class CakePhp2AppAnalyzer
         }
 
         return $this->modelExtendsGraph = $graph;
+    }
+
+    public function getBehaviorExtendsGraph(): BehaviorExtendsGraph
+    {
+        if (!is_null($this->behaviorExtendsGraph)) {
+            return $this->behaviorExtendsGraph;
+        }
+
+        $graph = new BehaviorExtendsGraph();
+        foreach ($this->getBehaviorReaders() as $behaviorReader) {
+            if ($parentBehaviorName = $behaviorReader->getParentBehaviorName()) {
+                if ($parentReader = $this->getBehaviorReaderFromName($parentBehaviorName)) {
+                    $graph->addExtends($behaviorReader, $parentReader);
+                }
+            }
+        }
+
+        return $this->behaviorExtendsGraph = $graph;
     }
 
     /**

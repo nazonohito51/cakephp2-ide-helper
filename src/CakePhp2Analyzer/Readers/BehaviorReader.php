@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CakePhp2IdeHelper\CakePhp2Analyzer\Readers;
 
+use PhpParser\Node\Name;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 
 class BehaviorReader extends PhpFileReader
@@ -60,5 +62,18 @@ class BehaviorReader extends PhpFileReader
         }
 
         return $ret;
+    }
+
+    public function getParentBehaviorName(): ?string
+    {
+        $classLike = $this->ast->getClassLike();
+        if ($classLike instanceof Class_ && !is_null($classLike->extends)) {
+            $parent = $classLike->extends;
+            if ($parent instanceof Name && $parent->toString() !== 'CakeObject') {
+                return $parent->toString();
+            }
+        }
+
+        return null;
     }
 }

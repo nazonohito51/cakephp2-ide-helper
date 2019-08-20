@@ -98,7 +98,7 @@ class DeprecateSomeBehavior2Behavior
     {
     }
 }
-class SomeBehavior3Behavior
+class SomeBehavior3Behavior extends SomeBehavior1Behavior
 {
     public function someBehavior3Method1(bool $arg1, bool $args2) : bool
     {
@@ -125,7 +125,7 @@ class SomeBehavior3Behavior
         return $behavior->someBehavior3Method3($model, $arg1, $args2);
     }
 }
-class DeprecateSomeBehavior3Behavior
+class DeprecateSomeBehavior3Behavior extends DeprecateSomeBehavior1Behavior
 {
     /**
      * @deprecated

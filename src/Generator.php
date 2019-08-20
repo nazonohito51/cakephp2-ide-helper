@@ -132,10 +132,13 @@ class Generator
 
     public function generateIdeHelperContent(): IdeHelperContent
     {
+        $behaviorExtendsGraph = $this->analyzer->getBehaviorExtendsGraph();
         $content = new IdeHelperContent();
         foreach ($this->analyzer->getBehaviorReaders() as $behaviorReader) {
-            $classEntry = new IdeHelperClassEntry($behaviorReader->getBehaviorName());
-            $deprecateClassEntry = new IdeHelperDeprecateClassEntry($behaviorReader->getBehaviorName());
+            $parentBehavior = !is_null($behaviorExtendsGraph->getParent($behaviorReader)) ?
+                $behaviorExtendsGraph->getParent($behaviorReader)->getBehaviorName() : null;
+            $classEntry = new IdeHelperClassEntry($behaviorReader->getBehaviorName(), $parentBehavior);
+            $deprecateClassEntry = new IdeHelperDeprecateClassEntry($behaviorReader->getBehaviorName(), $parentBehavior);
             foreach ($behaviorReader->getPublicMethods() as $method) {
                 $classEntry->addMethod($method);
                 $deprecateClassEntry->addMethod($method);

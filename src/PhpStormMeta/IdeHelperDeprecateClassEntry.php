@@ -6,21 +6,24 @@ namespace CakePhp2IdeHelper\PhpStormMeta;
 use PhpParser\Builder\Class_;
 use PhpParser\BuilderFactory;
 use PhpParser\Comment\Doc;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Return_;
-use PhpParser\PrettyPrinter\Standard;
 
 class IdeHelperDeprecateClassEntry extends IdeHelperClassEntry
 {
-    public function __construct(string $className)
+    public function __construct(string $className, string $parentClassName = null)
     {
-        parent::__construct('Deprecate' . $className);
+        if (!is_null($parentClassName)) {
+            $parentClassName = 'Deprecate' . $parentClassName;
+        }
+        parent::__construct('Deprecate' . $className, $parentClassName);
     }
 
     public function createStmt(): Class_
     {
         $builderFactory = new BuilderFactory;
         $classStmt = $builderFactory->class($this->getClassName());
+        if (!is_null($this->getParentClassName())) {
+            $classStmt->extend($this->getParentClassName());
+        }
 
         foreach ($this->getMethods() as $classMethod) {
             // remove first argument
