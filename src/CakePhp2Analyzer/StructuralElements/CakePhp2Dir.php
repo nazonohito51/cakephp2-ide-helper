@@ -22,6 +22,11 @@ abstract class CakePhp2Dir
      */
     protected $modelDirs = [];
 
+    /**
+     * @var string[]
+     */
+    private $ignoreFiles = [];
+
     public function __construct(string $appDir)
     {
         if (!is_dir($appDir = realpath($appDir))) {
@@ -29,8 +34,27 @@ abstract class CakePhp2Dir
         }
 
         $this->appDir = $appDir;
-
         $this->modelDirs[] = $this->getModelDirPath();
+    }
+
+    public function addIgnoreFile(string $ignoreFile): void
+    {
+        if (!is_file($ignoreFile)) {
+            throw new \InvalidArgumentException('ignore file is invalid: ' . $ignoreFile);
+        }
+
+        $this->ignoreFiles[] = $ignoreFile;
+    }
+
+    private function isIgnoreFile(string $file): bool
+    {
+        foreach ($this->ignoreFiles as $ignoreFile) {
+            if ($file === $ignoreFile) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected function getModelDirPath(): string
@@ -60,7 +84,9 @@ abstract class CakePhp2Dir
         $ret = [];
         foreach ($this->modelDirs as $modelDir) {
             foreach (glob($modelDir . '/*.php') as $path) {
-                $ret[] = $path;
+                if (!$this->isIgnoreFile($path)) {
+                    $ret[] = $path;
+                }
             }
         }
 
@@ -88,7 +114,9 @@ abstract class CakePhp2Dir
         $ret = [];
         foreach ($this->modelDirs as $modelDir) {
             foreach (glob($modelDir . '/Behavior/*.php') as $path) {
-                $ret[] = $path;
+                if (!$this->isIgnoreFile($path)) {
+                    $ret[] = $path;
+                }
             }
         }
 
@@ -112,7 +140,9 @@ abstract class CakePhp2Dir
     {
         $ret = [];
         foreach (glob($this->getFixtureDirPath() . '/*.php') as $path) {
-            $ret[] = $path;
+            if (!$this->isIgnoreFile($path)) {
+                $ret[] = $path;
+            }
         }
 
         return $ret;
@@ -139,7 +169,9 @@ abstract class CakePhp2Dir
         foreach ($iterator as $fileInfo) {
             /** @var $fileInfo \SplFileInfo */
             if ($fileInfo->getExtension() === 'php') {
-                $phpFiles[] = $fileInfo->getRealPath();
+                if (!$this->isIgnoreFile($fileInfo->getRealPath())) {
+                    $phpFiles[] = $fileInfo->getRealPath();
+                }
             }
         }
 

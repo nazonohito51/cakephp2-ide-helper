@@ -25,6 +25,7 @@ abstract class AbstractIdeHelperCommand extends Command
                 new InputOption('model-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional model dir', []),
                 new InputOption('behavior-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional behavior dir', []),
                 new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional plugin dir', []),
+                new InputOption('ignore', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Ignore file', []),
             ]);
     }
 
@@ -41,6 +42,9 @@ abstract class AbstractIdeHelperCommand extends Command
         }
         foreach ($input->getOption('plugin-dir') as $pluginDir) {
             $app->addPluginDir($pluginDir);
+        }
+        foreach ($input->getOption('ignore') as $ignoreFile) {
+            $app->addIgnoreFile($ignoreFile);
         }
 
         return $app;

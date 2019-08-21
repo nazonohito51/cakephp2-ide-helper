@@ -59,4 +59,18 @@ class CakePhp2AppTest extends TestCase
             return $fixtureReader->getFabricateDefineNames();
         }, $fixtureReaders));
     }
+
+    public function testIgnoreFunctions()
+    {
+        $app = new CakePhp2App($this->fixtureAppPath());
+        $app->addModelDir($this->fixtureAppPath('AdditionalModel'));
+        $app->addIgnoreFile($this->fixtureAppPath('Model/SomeModel1.php'));
+
+        $modelReaders = $app->getModelReaders();
+
+        $this->assertCount(3, $modelReaders);
+        $this->assertSame(['AppModel', 'SomeModel2', 'SomeModel5'], array_map(function (ModelReader $modelReader) {
+            return $modelReader->getModelName();
+        }, $modelReaders));
+    }
 }
