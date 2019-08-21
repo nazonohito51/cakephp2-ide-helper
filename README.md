@@ -6,7 +6,8 @@
 - [x] update phpdoc on Model with diff(use str_replace)
 - [x] analyze return type of Behavior
 - [x] deprecate Behavior method by model extends graph
-- [ ] consider git manage files
+- [x] consider git manage files
+- [ ] skip update model when phpdoc is empty
 - [x] ClassRegistry argument helper
 - [x] Fabricate argument helper
 - [ ] fixtures argument helper(phpstorm meta)
