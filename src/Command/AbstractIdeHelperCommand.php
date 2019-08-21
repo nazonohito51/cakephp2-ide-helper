@@ -57,6 +57,12 @@ abstract class AbstractIdeHelperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        return $this->generateFromGenerator($this->createGenerator($input));
+        try {
+            return $this->generateFromGenerator($this->createGenerator($input));
+        } catch (\Exception $e) {
+            var_dump($e);
+        }
+
+        return 1;
     }
 }
