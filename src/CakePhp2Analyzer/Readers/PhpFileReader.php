@@ -17,7 +17,7 @@ class PhpFileReader
             throw new \InvalidArgumentException('invalid model path: ' . $path);
         }
 
-        $this->file = new \SplFileObject($path);
+        $this->file = new \SplFileInfo($path);
         $this->ast = new Ast($path);
     }
 
