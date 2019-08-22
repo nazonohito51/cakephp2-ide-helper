@@ -55,10 +55,17 @@ class UpdateModelDocEntry
         return $replacedContents;
     }
 
+    private function phpDocIsEmpty(): bool
+    {
+        return $this->getReplaceDocComment() === "/**\n * \n *\n */";
+    }
+
     public function update(): void
     {
-        $replacedContent = $this->getReplaceModelContent();
-        $file = new \SplFileObject($this->getModelPath(), 'w');
-        $file->fwrite($replacedContent);
+        if (!$this->phpDocIsEmpty()) {
+            $replacedContent = $this->getReplaceModelContent();
+            $file = new \SplFileObject($this->getModelPath(), 'w');
+            $file->fwrite($replacedContent);
+        }
     }
 }
