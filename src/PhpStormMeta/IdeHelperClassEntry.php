@@ -8,13 +8,13 @@ use PhpParser\BuilderFactory;
 use PhpParser\Comment\Doc;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Return_;
-use PhpParser\PrettyPrinter\Standard;
 
 class IdeHelperClassEntry
 {
     private $className;
     private $parentClassName;
     private $classMethods = [];
+    protected $isAbstract = false;
 
     public function __construct(string $className, string $parentClassName = null)
     {
@@ -40,6 +40,11 @@ class IdeHelperClassEntry
         return $this->classMethods;
     }
 
+    public function setAbstract(bool $abstract): void
+    {
+        $this->isAbstract = $abstract;
+    }
+
     public function addMethod(ClassMethod $classMethod): void
     {
         if (count($classMethod->params) > 0) {
@@ -53,6 +58,9 @@ class IdeHelperClassEntry
         $classStmt = $builderFactory->class($this->getClassName());
         if (!is_null($this->getParentClassName())) {
             $classStmt->extend($this->getParentClassName());
+        }
+        if ($this->isAbstract) {
+            $classStmt->makeAbstract();
         }
 
         foreach ($this->getMethods() as $classMethod) {

@@ -76,4 +76,15 @@ class BehaviorReader extends PhpFileReader
 
         return null;
     }
+
+    public function isAbstractClass(): bool
+    {
+        $classLike = $this->ast->getClassLike();
+
+        if ($classLike instanceof Class_) {
+            return $classLike->isAbstract();
+        }
+
+        return false;
+    }
 }

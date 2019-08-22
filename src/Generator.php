@@ -138,10 +138,14 @@ class Generator
             $parentBehavior = !is_null($behaviorExtendsGraph->getParent($behaviorReader)) ?
                 $behaviorExtendsGraph->getParent($behaviorReader)->getBehaviorName() : null;
             $classEntry = new IdeHelperClassEntry($behaviorReader->getBehaviorName(), $parentBehavior);
+            $classEntry->setAbstract($behaviorReader->isAbstractClass());
             $deprecateClassEntry = new IdeHelperDeprecateClassEntry($behaviorReader->getBehaviorName(), $parentBehavior);
+            $deprecateClassEntry->setAbstract($behaviorReader->isAbstractClass());
             foreach ($behaviorReader->getPublicMethods() as $method) {
-                $classEntry->addMethod($method);
-                $deprecateClassEntry->addMethod($method);
+                if (!$method->isAbstract()) {
+                    $classEntry->addMethod($method);
+                    $deprecateClassEntry->addMethod($method);
+                }
             }
             $content->addEntry($classEntry);
             $content->addEntry($deprecateClassEntry);

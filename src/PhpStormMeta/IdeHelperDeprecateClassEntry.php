@@ -24,6 +24,9 @@ class IdeHelperDeprecateClassEntry extends IdeHelperClassEntry
         if (!is_null($this->getParentClassName())) {
             $classStmt->extend($this->getParentClassName());
         }
+        if ($this->isAbstract) {
+            $classStmt->makeAbstract();
+        }
 
         foreach ($this->getMethods() as $classMethod) {
             // remove first argument
