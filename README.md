@@ -20,3 +20,5 @@
 - [x] disable behavior extend
 - [ ] Controller uses property
 - [x] Consider Behavior extends
+- [x] ignore abstract behavior, or assign abstract keyword
+- [x] consider about duplicate behaviors

@@ -20,6 +20,17 @@ class IdeHelperContent
         $this->entries[] = $entry;
     }
 
+    public function haveClassEntry(string $className): bool
+    {
+        foreach ($this->entries as $entry) {
+            if ($entry->getClassName() === $className) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getMockClassFromOriginalClass(string $className): ?string
     {
         foreach ($this->entries as $entry) {
