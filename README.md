@@ -7,7 +7,7 @@
 - [x] analyze return type of Behavior
 - [x] deprecate Behavior method by model extends graph
 - [x] consider git manage files
-- [ ] skip update model when phpdoc is empty
+- [x] skip update model when phpdoc is empty
 - [x] ClassRegistry argument helper
 - [x] Fabricate argument helper
 - [ ] fixtures argument helper(phpstorm meta)
@@ -17,6 +17,6 @@
 - [x] Model::find('', ['condition'...])
 - [x] withRead argument
 - [ ] ignore unload behavior
-- [ ] disable behavior extend
+- [x] disable behavior extend
 - [ ] Controller uses property
 - [x] Consider Behavior extends
