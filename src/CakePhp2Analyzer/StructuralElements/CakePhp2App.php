@@ -33,6 +33,7 @@ class CakePhp2App extends CakePhp2Dir
 
     public function addPluginDir(string $pluginDir): void
     {
+        $pluginDir = realpath($pluginDir);
         if (!is_dir($pluginDir)) {
             throw new \InvalidArgumentException();
         }
@@ -69,6 +70,7 @@ class CakePhp2App extends CakePhp2Dir
 
     public function addBehaviorDir(string $behaviorDir): void
     {
+        $behaviorDir = realpath($behaviorDir);
         if (!is_dir($behaviorDir)) {
             throw new \InvalidArgumentException();
         }

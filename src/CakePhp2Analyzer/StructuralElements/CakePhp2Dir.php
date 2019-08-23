@@ -39,6 +39,7 @@ abstract class CakePhp2Dir
 
     public function addIgnoreFile(string $ignoreFile): void
     {
+        $ignoreFile = realpath($ignoreFile);
         if (!is_file($ignoreFile)) {
             throw new \InvalidArgumentException('ignore file is invalid: ' . $ignoreFile);
         }
@@ -69,6 +70,7 @@ abstract class CakePhp2Dir
 
     public function addModelDir(string $modelDir): void
     {
+        $modelDir = realpath($modelDir);
         if (!is_dir($modelDir)) {
             throw new \InvalidArgumentException('model dir is invalid:' . $modelDir);
         }
