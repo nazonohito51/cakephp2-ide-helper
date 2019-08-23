@@ -114,8 +114,8 @@ class Generator
     {
         $ideHelperNamespace = IdeHelperContent::NAMESPACE;
         $entry = new ExpectArgumentsEntry("\\{$ideHelperNamespace}\\SwitchableDatasourceBehavior::withRead()", 0);
-        $entry->addAsString("function (Model \$model) {\n            return;\n        }");
-        $entry->addAsString("static function (Model \$model) {\n            return;\n        }");
+        $entry->add("function (Model \$model) {\n            return;\n        }");
+        $entry->add("static function (Model \$model) {\n            return;\n        }");
 
         return $entry;
     }
@@ -124,8 +124,8 @@ class Generator
     {
         $ideHelperNamespace = IdeHelperContent::NAMESPACE;
         $entry = new ExpectArgumentsEntry("\\{$ideHelperNamespace}\\SwitchableDatasourceBehavior::withWrite()", 0);
-        $entry->addAsString("function (Model \$model) {\n            return;\n        }");
-        $entry->addAsString("static function (Model \$model) {\n            return;\n        }");
+        $entry->add("function (Model \$model) {\n            return;\n        }");
+        $entry->add("static function (Model \$model) {\n            return;\n        }");
 
         return $entry;
     }

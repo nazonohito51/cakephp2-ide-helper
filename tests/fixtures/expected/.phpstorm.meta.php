@@ -59,21 +59,21 @@ namespace PHPSTORM_META {
     expectedArguments(
         \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withRead(),
         0,
-        'function (Model $model) {
+        function (Model $model) {
             return;
-        }',
-        'static function (Model $model) {
+        },
+        static function (Model $model) {
             return;
-        }',
+        },
     );
     expectedArguments(
         \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withWrite(),
         0,
-        'function (Model $model) {
+        function (Model $model) {
             return;
-        }',
-        'static function (Model $model) {
+        },
+        static function (Model $model) {
             return;
-        }',
+        },
     );
 }
