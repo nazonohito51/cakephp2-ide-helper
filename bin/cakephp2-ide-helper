@@ -1,0 +1,27 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+$autoloaderPaths = ['/vendor/autoload.php', '/Vendor/autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/../Vendor/autoload.php', __DIR__ . '/../../../autoload.php'];
+foreach ($autoloaderPaths as $autoloaderPath) {
+    if (is_file($autoloaderPath)) {
+        require_once $autoloaderPath;
+        break;
+    }
+}
+
+$autoloaderIncluded = false;
+foreach (get_included_files() as $includedFile) {
+    if (preg_match('|/autoload.php\z|', $includedFile) === 1) {
+        $autoloaderIncluded = true;
+    }
+}
+if ($autoloaderIncluded === false) {
+    echo "searching autoloader is failed.";
+}
+
+$application = new \Symfony\Component\Console\Application('CakePHP2 IDE Helper');
+$application->add(new \CakePhp2IdeHelper\Command\GenerateMetaCommand());
+$application->add(new \CakePhp2IdeHelper\Command\GenerateIdeHelperCommand());
+$application->add(new \CakePhp2IdeHelper\Command\GenerateModelDocCommand());
+$application->run();
