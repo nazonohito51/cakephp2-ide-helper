@@ -44,7 +44,7 @@ namespace PHPSTORM_META {
     expectedArguments(
         \Model::find(),
         1,
-        '[
+        [
             "conditions" => null,
             "fields" => null,
             "joins" => [],
@@ -54,7 +54,7 @@ namespace PHPSTORM_META {
             "page" => 1,
             "group" => null,
             "callbacks" => true,
-        ]',
+        ],
     );
     expectedArguments(
         \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withRead(),
