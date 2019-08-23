@@ -33,6 +33,12 @@ path/to/your/vendor/bin/cakephp2-ide-helper generate:model --app-dir=./app --git
 ```
 
 Update phpdoc of models, for code complement of behavior methods.
+If there is duplicate models, this command will be failed.
+When this case, you need `--ignore` options.
+
+```shell script
+path/to/your/vendor/bin/cakephp2-ide-helper generate:model --app-dir=./app --git-root=./ --ignore=Model/SomeDuplicateClass.php
+```
 
 ## TODO
 - [x] read actsAs from Model
