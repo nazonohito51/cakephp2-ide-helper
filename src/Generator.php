@@ -64,7 +64,7 @@ class Generator
     {
         $entry = new ExpectArgumentsEntry('\\ClassRegistry::init()', 0);
         foreach ($this->analyzer->getModelReaders() as $modelReader) {
-            $entry->add($modelReader->getSymbol());
+            $entry->addAsString($modelReader->getSymbol());
         }
 
         return $entry;
@@ -75,7 +75,7 @@ class Generator
         $entry = new ExpectArgumentsEntry('\\Fabricate\\Fabricate::create()', 0);
         foreach ($this->analyzer->getFixtureReaders() as $fixtureReader) {
             foreach ($fixtureReader->getFabricateDefineNames() as $fabricateDefineName) {
-                $entry->add($fabricateDefineName);
+                $entry->addAsString($fabricateDefineName);
             }
         }
 
@@ -86,7 +86,7 @@ class Generator
     {
         $entry = new ExpectArgumentsEntry('\\Model::find()', 0);
         foreach (['first', 'count', 'all', 'list', 'threaded', 'neighbors'] as $arg) {
-            $entry->add($arg);
+            $entry->addAsString($arg);
         }
 
         return $entry;
@@ -95,7 +95,7 @@ class Generator
     private function createModelFindSecondArgument(): ExpectArgumentsEntry
     {
         $entry = new ExpectArgumentsEntry('\\Model::find()', 1);
-        $entry->add('[
+        $entry->addAsString('[
             "conditions" => null,
             "fields" => null,
             "joins" => [],
@@ -114,8 +114,8 @@ class Generator
     {
         $ideHelperNamespace = IdeHelperContent::NAMESPACE;
         $entry = new ExpectArgumentsEntry("\\{$ideHelperNamespace}\\SwitchableDatasourceBehavior::withRead()", 0);
-        $entry->add("function (Model \$model) {\n            return;\n        }");
-        $entry->add("static function (Model \$model) {\n            return;\n        }");
+        $entry->addAsString("function (Model \$model) {\n            return;\n        }");
+        $entry->addAsString("static function (Model \$model) {\n            return;\n        }");
 
         return $entry;
     }
@@ -124,8 +124,8 @@ class Generator
     {
         $ideHelperNamespace = IdeHelperContent::NAMESPACE;
         $entry = new ExpectArgumentsEntry("\\{$ideHelperNamespace}\\SwitchableDatasourceBehavior::withWrite()", 0);
-        $entry->add("function (Model \$model) {\n            return;\n        }");
-        $entry->add("static function (Model \$model) {\n            return;\n        }");
+        $entry->addAsString("function (Model \$model) {\n            return;\n        }");
+        $entry->addAsString("static function (Model \$model) {\n            return;\n        }");
 
         return $entry;
     }

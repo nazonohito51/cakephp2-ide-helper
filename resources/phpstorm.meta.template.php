@@ -18,7 +18,7 @@ namespace PHPSTORM_META {
         <?php echo $expectArgumentsEntry->getTarget();?>,
         <?php echo $expectArgumentsEntry->getArgPosition();?>,
 <?php foreach ($expectArgumentsEntry->getArgs() as $value) : ?>
-        '<?php echo $value;?>',
+        <?php echo $value;?>,
 <?php endforeach; ?>
     );
 <?php endforeach; ?>

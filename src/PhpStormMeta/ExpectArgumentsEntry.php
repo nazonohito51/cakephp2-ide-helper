@@ -8,6 +8,7 @@ class ExpectArgumentsEntry
     private $target;
     private $argPosition;
     private $expectArgs = [];
+    private $expectArgsAsString = [];
 
     public function __construct(string $target, int $argPosition)
     {
@@ -15,23 +16,35 @@ class ExpectArgumentsEntry
         $this->argPosition = $argPosition;
     }
 
-    public function add(string $arg)
+    public function add(string $arg): void
     {
         $this->expectArgs[] = $arg;
     }
 
-    public function getTarget()
+    public function addAsString(string $arg): void
+    {
+        $this->expectArgsAsString[] = $arg;
+    }
+
+    public function getTarget(): string
     {
         return $this->target;
     }
 
-    public function getArgPosition()
+    public function getArgPosition(): int
     {
         return $this->argPosition;
     }
 
     public function getArgs()
     {
-        return $this->expectArgs;
+        $ret = [];
+        foreach ($this->expectArgs as $expectArg) {
+            $ret[] = $expectArg;
+        }
+        foreach ($this->expectArgsAsString as $expectArg) {
+            $ret[] = "'$expectArg'";
+        }
+        return $ret;
     }
 }
