@@ -25,7 +25,7 @@ Generate `.phpstorm.meta.php`. [see sample](https://github.com/nazonohito51/cake
 path/to/your/vendor/bin/cakephp2-ide-helper generate:helper --app-dir=./app
 ```
 
-Generate `_ide_helper.php`. [see sample](https://github.com/nazonohito51/cakephp2-ide-helper/blob/master/sample/_ide_helpder.php).
+Generate `_ide_helper.php`. [see sample](https://github.com/nazonohito51/cakephp2-ide-helper/blob/master/sample/_ide_helper.php).
 
 ### `generate:model`
 ```shell script
