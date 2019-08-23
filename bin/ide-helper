@@ -2,17 +2,23 @@
 <?php
 declare(strict_types=1);
 
-$autoloaderInWorkingDirectory = getcwd() . '/vendor/autoload.php';
-if (is_file($autoloaderInWorkingDirectory)) {
-    require_once $autoloaderInWorkingDirectory;
+$autoloaderPaths = ['/vendor/autoload.php', '/Vendor/autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/../Vendor/autoload.php', __DIR__ . '/../../../autoload.php'];
+foreach ($autoloaderPaths as $autoloaderPath) {
+    if (is_file($autoloaderPath)) {
+        require_once $autoloaderPath;
+        break;
+    }
 }
 
-$composerAutoloadFile = __DIR__ . '/../vendor/autoload.php';
-if (!is_file($composerAutoloadFile)) {
-    $composerAutoloadFile = __DIR__ . '/../../../autoload.php';
+$autoloaderIncluded = false;
+foreach (get_included_files() as $includedFile) {
+    if (preg_match('|/autoload.php\z|', $includedFile) === 1) {
+        $autoloaderIncluded = true;
+    }
 }
-
-require_once $composerAutoloadFile;
+if ($autoloaderIncluded === false) {
+    echo "searching autoloader is failed.";
+}
 
 $application = new \Symfony\Component\Console\Application('CakePHP2 IDE Helper');
 $application->add(new \CakePhp2IdeHelper\Command\GenerateMetaCommand());
