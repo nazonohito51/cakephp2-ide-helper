@@ -95,7 +95,7 @@ class Generator
     private function createModelFindSecondArgument(): ExpectArgumentsEntry
     {
         $entry = new ExpectArgumentsEntry('\\Model::find()', 1);
-        $entry->addAsString('[
+        $entry->add('[
             "conditions" => null,
             "fields" => null,
             "joins" => [],
