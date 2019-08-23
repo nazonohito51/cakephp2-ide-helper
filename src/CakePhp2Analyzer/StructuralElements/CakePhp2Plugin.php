@@ -22,7 +22,7 @@ class CakePhp2Plugin extends CakePhp2Dir
         return true;
     }
 
-    public function getPluginName(): ?string
+    public function getPluginName(): string
     {
         return $this->pluginName;
     }

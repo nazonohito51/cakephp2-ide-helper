@@ -59,7 +59,11 @@ class CakePhp2App extends CakePhp2Dir
                 foreach (glob("{$pluginDir}*", GLOB_ONLYDIR) as $pluginPath) {
                     $pluginDir = new \SplFileInfo($pluginPath);
                     if ($pluginDir->isDir()) {
-                        $ret[] = new CakePhp2Plugin($pluginDir->getRealPath(), $pluginDir->getFilename());
+                        $plugin = new CakePhp2Plugin($pluginDir->getRealPath(), $pluginDir->getFilename());
+                        foreach ($this->getIgnoreFiles() as $ignoreFile) {
+                            $plugin->addIgnoreFile($ignoreFile);
+                        }
+                        $ret[] = $plugin;
                     }
                 }
             }

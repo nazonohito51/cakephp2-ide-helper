@@ -47,9 +47,14 @@ abstract class CakePhp2Dir
         $this->ignoreFiles[] = $ignoreFile;
     }
 
+    public function getIgnoreFiles(): array
+    {
+        return $this->ignoreFiles;
+    }
+
     private function isIgnoreFile(string $file): bool
     {
-        foreach ($this->ignoreFiles as $ignoreFile) {
+        foreach ($this->getIgnoreFiles() as $ignoreFile) {
             if ($file === $ignoreFile) {
                 return true;
             }
