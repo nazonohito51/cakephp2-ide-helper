@@ -184,24 +184,12 @@ class Generator
 
     public function createModelDocEntry(ModelReader $modelReader, IdeHelperContent $content): UpdateModelDocEntry
     {
-        $originalDocComment = $modelReader->getPhpDoc() ?? '';
-        $replaceDoc = new DocBlock($originalDocComment);
+        $entry = new UpdateModelDocEntry($modelReader);
 
         foreach ($modelReader->getBehaviorSymbols() as $behaviorSymbol) {
             if ($behaviorReader = $this->analyzer->searchBehaviorFromSymbol($behaviorSymbol)) {
                 $mockClassName = $content->getMockClassFromOriginalClass($behaviorReader->getBehaviorName());
-                $tag = Tag::createInstance("@mixin {$mockClassName} Added by cakephp2-ide-helper", $replaceDoc);
-
-                $exist = false;
-                foreach ($replaceDoc->getTags() as $existTag) {
-                    if ($existTag->__toString() === $tag->__toString()) {
-                        $exist = true;
-                        break;
-                    }
-                }
-                if (!$exist) {
-                    $replaceDoc->appendTag($tag);
-                }
+                $entry->appendTagWhenNotExist("@mixin {$mockClassName}");
             }
         }
 
@@ -212,14 +200,12 @@ class Generator
             if (in_array($shouldDeprecateBehaviorSymbol, $modelReader->getBehaviorSymbols(), true)) {
                 continue;
             }
-
             $behaviorReader = $this->analyzer->searchBehaviorFromSymbol($shouldDeprecateBehaviorSymbol);
             $mockClassName = $content->getDeprecateMockClassFromOriginalClass($behaviorReader->getBehaviorName());
-            $tag = Tag::createInstance("@mixin {$mockClassName} Added by cakephp2-ide-helper", $replaceDoc);
-            $replaceDoc->appendTag($tag);
+            $entry->appendTagWhenNotExist("@mixin {$mockClassName}");
         }
 
-        return new UpdateModelDocEntry($modelReader, $replaceDoc);
+        return $entry;
     }
 
     private function getMetaFileTemplatePath(): string

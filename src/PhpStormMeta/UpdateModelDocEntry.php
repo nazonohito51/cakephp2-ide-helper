@@ -5,6 +5,7 @@ namespace CakePhp2IdeHelper\PhpStormMeta;
 
 use Barryvdh\Reflection\DocBlock;
 use Barryvdh\Reflection\DocBlock\Serializer as DocBlockSerializer;
+use Barryvdh\Reflection\DocBlock\Tag;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use CakePhp2IdeHelper\Exception\FailedUpdatingPhpDocException;
 
@@ -13,17 +14,37 @@ class UpdateModelDocEntry
     private $modelReader;
     private $replaceDoc;
     private $serializer;
+    private $haveUpdate = false;
 
-    public function __construct(ModelReader $modelReader, DocBlock $replaceDoc)
+    public function __construct(ModelReader $modelReader)
     {
         $this->modelReader = $modelReader;
-        $this->replaceDoc = $replaceDoc;
+
+        $originalDocComment = $modelReader->getPhpDoc() ?? '';
+        $this->replaceDoc = new DocBlock($originalDocComment);
         $this->serializer = new DocBlockSerializer();
     }
 
     public function getModelPath(): string
     {
         return $this->modelReader->getRealPath();
+    }
+
+    public function appendTagWhenNotExist(string $tagString): void
+    {
+        $tag = Tag::createInstance("{$tagString} Added by cakephp2-ide-helper", $this->replaceDoc);
+
+        $exist = false;
+        foreach ($this->replaceDoc->getTags() as $existTag) {
+            if ($existTag->__toString() === $tag->__toString()) {
+                $exist = true;
+                break;
+            }
+        }
+        if (!$exist) {
+            $this->replaceDoc->appendTag($tag);
+            $this->haveUpdate = true;
+        }
     }
 
     public function getReplaceDocComment(): string
@@ -62,7 +83,7 @@ class UpdateModelDocEntry
 
     public function update(): void
     {
-        if (!$this->phpDocIsEmpty()) {
+        if (!$this->phpDocIsEmpty() && $this->haveUpdate) {
             $replacedContent = $this->getReplaceModelContent();
             $file = new \SplFileObject($this->getModelPath(), 'w');
             $file->fwrite($replacedContent);
