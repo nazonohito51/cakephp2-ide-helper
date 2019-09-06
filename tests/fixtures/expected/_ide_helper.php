@@ -1,5 +1,6 @@
 <?php
 
+// phpcs:ignoreFile
 namespace CakePhp2IdeHelper;
 
 class SomeBehavior1Behavior

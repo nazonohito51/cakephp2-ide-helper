@@ -58,12 +58,14 @@ class IdeHelperContent
 
     public function __toString(): string
     {
-        $factory = (new BuilderFactory)->namespace(self::NAMESPACE);
+        $factory = (new BuilderFactory)->namespace(self::NAMESPACE)->setDocComment(
+            '// phpcs:ignoreFile'
+        );
 
         foreach ($this->entries as $entry) {
             $factory->addStmt($entry->createStmt());
         }
 
-        return (new Standard())->prettyPrintFile([$factory->getNode()]);
+        return (new Standard())->prettyPrintFile([$factory->getNode()]) . "\n";
     }
 }
