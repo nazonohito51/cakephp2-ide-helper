@@ -36,7 +36,7 @@ class ExpectArgumentsEntry
         return $this->argPosition;
     }
 
-    public function getArgs()
+    public function getArgs(): array
     {
         $ret = [];
         foreach ($this->expectArgs as $expectArg) {
@@ -46,5 +46,11 @@ class ExpectArgumentsEntry
             $ret[] = "'$expectArg'";
         }
         return $ret;
+    }
+
+    public function isLastArg(string $arg): bool
+    {
+        $args = $this->getArgs();
+        return end($args) === $arg;
     }
 }

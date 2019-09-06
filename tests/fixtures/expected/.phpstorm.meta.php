@@ -21,7 +21,7 @@ namespace PHPSTORM_META {
         'SomeModel1',
         'SomeModel2',
         'SomePlugin1.SomeModel3',
-        'SomePlugin1.SomeModel4',
+        'SomePlugin1.SomeModel4'
     );
     expectedArguments(
         \Fabricate\Fabricate::create(),
@@ -29,7 +29,7 @@ namespace PHPSTORM_META {
         'SomeModel1',
         'SomeModel1_Extends',
         'SomeModel2',
-        'SomeModel2_extends',
+        'SomeModel2_extends'
     );
     expectedArguments(
         \Model::find(),
@@ -39,7 +39,7 @@ namespace PHPSTORM_META {
         'all',
         'list',
         'threaded',
-        'neighbors',
+        'neighbors'
     );
     expectedArguments(
         \Model::find(),
@@ -54,7 +54,7 @@ namespace PHPSTORM_META {
             "page" => 1,
             "group" => null,
             "callbacks" => true,
-        ],
+        ]
     );
     expectedArguments(
         \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withRead(),
@@ -64,7 +64,7 @@ namespace PHPSTORM_META {
         },
         static function (Model $model) {
             return;
-        },
+        }
     );
     expectedArguments(
         \CakePhp2IdeHelper\SwitchableDatasourceBehavior::withWrite(),
@@ -74,6 +74,6 @@ namespace PHPSTORM_META {
         },
         static function (Model $model) {
             return;
-        },
+        }
     );
 }
