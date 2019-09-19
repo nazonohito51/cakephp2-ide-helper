@@ -39,8 +39,7 @@ abstract class CakePhp2Dir
 
     public function addIgnoreFile(string $ignoreFile): void
     {
-        $ignoreFile = realpath($ignoreFile);
-        if (!is_file($ignoreFile)) {
+        if (!is_file($ignoreFile = realpath($ignoreFile))) {
             throw new \InvalidArgumentException('ignore file is invalid: ' . $ignoreFile);
         }
 
