@@ -15,6 +15,14 @@ class CakePhp2App extends CakePhp2Dir
      */
     private $pluginDirs = [];
 
+    public function __construct(string $appDir)
+    {
+        parent::__construct($appDir);
+
+        // add default behaviors
+        $this->addBehaviorDir($this->appDir . '/Vendor/cakephp/cakephp/lib/Cake/Model/Behavior');
+    }
+
     /**
      * @inheritDoc
      */
