@@ -58,7 +58,7 @@ path/to/your/vendor/bin/cakephp2-ide-helper generate:model --app-dir=./app --git
 - [x] withRead argument
 - [ ] ignore unload behavior
 - [x] disable behavior extend
-- [ ] Controller uses property
+- [ ] Controller/Shell uses property
 - [x] Consider Behavior extends
 - [x] ignore abstract behavior, or assign abstract keyword
 - [x] consider about duplicate behaviors
