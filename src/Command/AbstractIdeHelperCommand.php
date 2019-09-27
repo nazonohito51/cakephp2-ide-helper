@@ -23,6 +23,7 @@ abstract class AbstractIdeHelperCommand extends Command
             ->setDefinition([
                 new InputOption('app-dir', null, InputOption::VALUE_REQUIRED, 'CakePHP2 app dir path'),
                 new InputOption('model-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional model dir', []),
+                new InputOption('controller-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional controller dir', []),
                 new InputOption('behavior-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional behavior dir', []),
                 new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional plugin dir', []),
                 new InputOption('ignore', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Ignore file', []),
@@ -36,6 +37,9 @@ abstract class AbstractIdeHelperCommand extends Command
 
         foreach ($input->getOption('model-dir') as $modelDir) {
             $app->addModelDir($modelDir);
+        }
+        foreach ($input->getOption('controller-dir') as $controllerDir) {
+            $app->addControllerDir($controllerDir);
         }
         foreach ($input->getOption('behavior-dir') as $behaviorDir) {
             $app->addBehaviorDir($behaviorDir);

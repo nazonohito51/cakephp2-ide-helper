@@ -13,6 +13,7 @@ use CakePhp2IdeHelper\PhpStormMeta\IdeHelperClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperContent;
 use CakePhp2IdeHelper\PhpStormMeta\IdeHelperDeprecateClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\OverRideEntry;
+use CakePhp2IdeHelper\PhpStormMeta\UpdateControllerDocEntry;
 use CakePhp2IdeHelper\PhpStormMeta\UpdateModelDocEntry;
 
 class Generator
@@ -206,6 +207,22 @@ class Generator
         }
 
         return $entry;
+    }
+
+    public function generateControllerDocEntries(): array
+    {
+        $entries = [];
+        foreach ($this->analyzer->getControllerReaders() as $controllerReader) {
+            $entry = new UpdateControllerDocEntry();
+
+            foreach ($controllerReader->getUseModelSymbols() as $modelSymbol) {
+                $modelReader = $this->analyzer->searchModelFromSymbol($modelSymbol);
+            }
+
+            $entries[] = $entry;
+        }
+
+        return $entries;
     }
 
     private function getMetaFileTemplatePath(): string

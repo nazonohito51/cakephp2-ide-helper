@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements;
 
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ControllerReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\FixtureReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\PhpFileReader;
@@ -25,6 +26,11 @@ abstract class CakePhp2Dir
     /**
      * @var string[]
      */
+    protected $controllerDirs = [];
+
+    /**
+     * @var string[]
+     */
     private $ignoreFiles = [];
 
     public function __construct(string $appDir)
@@ -35,6 +41,7 @@ abstract class CakePhp2Dir
 
         $this->appDir = $appDir;
         $this->modelDirs[] = $this->getModelDirPath();
+        $this->controllerDirs = $this->getControllerDirPath();
     }
 
     public function addIgnoreFile(string $ignoreFile): void
@@ -72,6 +79,11 @@ abstract class CakePhp2Dir
         return $this->appDir . '/Test/Fixture';
     }
 
+    protected function getControllerDirPath(): string
+    {
+        return $this->appDir . '/Controller';
+    }
+
     public function addModelDir(string $modelDir): void
     {
         $modelDir = realpath($modelDir);
@@ -80,6 +92,16 @@ abstract class CakePhp2Dir
         }
 
         $this->modelDirs[] = $modelDir;
+    }
+
+    public function addControllerDir(string $controllerDir): void
+    {
+        $controllerDir = realpath($controllerDir);
+        if (!is_dir($controllerDir)) {
+            throw new \InvalidArgumentException('controller dir is invalid:' . $controllerDir);
+        }
+
+        $this->controllerDirs[] = $controllerDir;
     }
 
     /**
@@ -165,6 +187,33 @@ abstract class CakePhp2Dir
         }
 
         return $fixtureReaders;
+    }
+
+    protected function getControllerFiles(): array
+    {
+        $ret = [];
+        foreach ($this->controllerDirs as $controllerDir) {
+            foreach (glob($controllerDir . '/*.php') as $path) {
+                if (!$this->isIgnoreFile($path)) {
+                    $ret[] = $path;
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @return ControllerReader[]
+     */
+    public function getControllerReaders(): array
+    {
+        $controllerReaders = [];
+        foreach ($this->getControllerFiles() as $controllerFile) {
+            $controllerReaders[] = new ControllerReader($controllerFile);
+        }
+
+        return $controllerReaders;
     }
 
     public function getPhpFiles()
