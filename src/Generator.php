@@ -209,17 +209,27 @@ class Generator
         return $entry;
     }
 
+    /**
+     * @return UpdateControllerDocEntry[]
+     */
     public function generateControllerDocEntries(): array
     {
         $entries = [];
         foreach ($this->analyzer->getControllerReaders() as $controllerReader) {
-            $entry = new UpdateControllerDocEntry();
+            try {
+                $entry = new UpdateControllerDocEntry($controllerReader);
 
-            foreach ($controllerReader->getUseModelSymbols() as $modelSymbol) {
-                $modelReader = $this->analyzer->searchModelFromSymbol($modelSymbol);
+                foreach ($controllerReader->getUseModelSymbols() as $modelSymbol) {
+                    if (!is_null($modelReader = $this->analyzer->searchModelFromSymbol($modelSymbol))) {
+                        $entry->appendTagWhenNotExist("@property {$modelReader->getModelName()} \${$modelReader->getModelName()}");
+                    }
+                }
+                $controllerReader->flush();
+
+                $entries[] = $entry;
+            } catch (\PhpParser\Error $e) {
+                // TODO: error handling
             }
-
-            $entries[] = $entry;
         }
 
         return $entries;

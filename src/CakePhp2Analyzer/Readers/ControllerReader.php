@@ -72,4 +72,9 @@ class ControllerReader extends PhpFileReader
         $docComment = $classLike->getDocComment();
         return !is_null($docComment) ? $docComment->__toString() : null;
     }
+
+    public function flush(): void
+    {
+        $this->ast->flush();
+    }
 }

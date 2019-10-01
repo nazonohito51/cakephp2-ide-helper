@@ -27,6 +27,7 @@ abstract class AbstractIdeHelperCommand extends Command
                 new InputOption('behavior-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional behavior dir', []),
                 new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional plugin dir', []),
                 new InputOption('ignore', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Ignore file', []),
+                new InputOption('memory-limit', null, InputOption::VALUE_REQUIRED, 'Memory limit for the run (ex: 500k, 500M, 5G)'),
             ]);
     }
 
@@ -61,6 +62,10 @@ abstract class AbstractIdeHelperCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        if ($memoryLimit = $input->getOption('memory-limit')) {
+            $this->setMemoryLimit($memoryLimit);
+        }
+
         try {
             return $this->generateFromGenerator($this->createGenerator($input));
         } catch (\Exception $e) {
@@ -68,5 +73,18 @@ abstract class AbstractIdeHelperCommand extends Command
         }
 
         return 1;
+    }
+
+    /**
+     * @param string $memoryLimit
+     */
+    protected function setMemoryLimit(string $memoryLimit): void
+    {
+        if (preg_match('#^-?\d+[kMG]?$#i', $memoryLimit) !== 1) {
+            throw new \InvalidArgumentException(sprintf('memory-limit is invalid format "%s".', $memoryLimit));
+        }
+        if (ini_set('memory_limit', $memoryLimit) === false) {
+            throw new \RuntimeException("setting memory_limit to {$memoryLimit} is failed.");
+        }
     }
 }

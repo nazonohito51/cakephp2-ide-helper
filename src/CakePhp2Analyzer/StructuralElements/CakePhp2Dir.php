@@ -41,7 +41,7 @@ abstract class CakePhp2Dir
 
         $this->appDir = $appDir;
         $this->modelDirs[] = $this->getModelDirPath();
-        $this->controllerDirs = $this->getControllerDirPath();
+        $this->controllerDirs[] = $this->getControllerDirPath();
     }
 
     public function addIgnoreFile(string $ignoreFile): void

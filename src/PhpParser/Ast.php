@@ -36,6 +36,11 @@ class Ast
         return $this->statements;
     }
 
+    public function flush(): void
+    {
+        $this->statements = null;
+    }
+
     private function traverse(NodeVisitorAbstract $visitor): void
     {
         $traverser = new NodeTraverser();

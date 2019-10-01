@@ -47,12 +47,12 @@ class UpdateControllerDocEntry
         }
     }
 
-    public function getReplaceDocComment(): string
+    private function getReplaceDocComment(): string
     {
         return $this->serializer->getDocComment($this->replaceDoc);
     }
 
-    public function getReplaceModelContent(): string
+    public function getReplaceControllerContent(): string
     {
         $replaceDocComment = $this->getReplaceDocComment();
         if (empty($this->replaceDoc->getShortDescription()) && empty($this->replaceDoc->getLongDescription()->getContents())) {
@@ -60,15 +60,15 @@ class UpdateControllerDocEntry
             $replaceDocComment = str_replace("/**\n * \n *", '/**', $replaceDocComment);
         }
 
-        $originalContent = $this->modelReader->getContent();
-        if (!empty($originalDocComment = $this->modelReader->getPhpDoc())) {
+        $originalContent = $this->controllerReader->getContent();
+        if (!empty($originalDocComment = $this->controllerReader->getPhpDoc())) {
             $replacedContents = str_replace($originalDocComment, $replaceDocComment, $originalContent);
         } else {
-            $needle = "class {$this->modelReader->getModelName()}";
-            $replace = "{$replaceDocComment}\nclass {$this->modelReader->getModelName()}";
+            $needle = "class {$this->controllerReader->getControllerName()}";
+            $replace = "{$replaceDocComment}\nclass {$this->controllerReader->getControllerName()}";
             $pos = strpos($originalContent, $needle);
             if ($pos === false) {
-                throw new FailedUpdatingPhpDocException($this->getModelPath());
+                throw new FailedUpdatingPhpDocException($this->getControllerPath());
             }
             $replacedContents = substr_replace($originalContent, $replace, $pos, strlen($needle));
         }
@@ -84,8 +84,8 @@ class UpdateControllerDocEntry
     public function update(): void
     {
         if (!$this->phpDocIsEmpty() && $this->haveUpdate) {
-            $replacedContent = $this->getReplaceModelContent();
-            $file = new \SplFileObject($this->getModelPath(), 'w');
+            $replacedContent = $this->getReplaceControllerContent();
+            $file = new \SplFileObject($this->getControllerPath(), 'w');
             $file->fwrite($replacedContent);
         }
     }
