@@ -64,15 +64,10 @@ class GenerateControllerDocCommand extends AbstractIdeHelperCommand
 
     protected function generateFromGenerator(Generator $generator): int
     {
-        var_dump('ccc');
-        try {
-            foreach ($generator->generateControllerDocEntries() as $updateControllerDocEntry) {
-                if ($this->ignoreGit || in_array($updateControllerDocEntry->getControllerPath(), $this->gitManagedFiles, true)) {
-                    $updateControllerDocEntry->update();
-                }
+        foreach ($generator->generateControllerDocEntries() as $updateControllerDocEntry) {
+            if ($this->ignoreGit || in_array($updateControllerDocEntry->getControllerPath(), $this->gitManagedFiles, true)) {
+                $updateControllerDocEntry->update();
             }
-        } catch (\Exception $e) {
-            var_dump($e->getMessage());
         }
 
         return 0;
