@@ -92,7 +92,7 @@ class ModelExtendsGraph
             $vertex = $parents->getVertexFirst();
             $readers = $vertex->getAttribute('readers');
             if (count($readers) > 1) {
-                throw new \LogicException('');
+                throw new \LogicException("Unknown error: {$modelReader->getModelName()} in ModelExtendsGraph have multiple readers");
             }
 
             return $readers[0];
