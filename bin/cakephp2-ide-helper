@@ -25,4 +25,5 @@ $application->add(new \CakePhp2IdeHelper\Command\GenerateMetaCommand());
 $application->add(new \CakePhp2IdeHelper\Command\GenerateIdeHelperCommand());
 $application->add(new \CakePhp2IdeHelper\Command\GenerateModelDocCommand());
 $application->add(new \CakePhp2IdeHelper\Command\GenerateControllerDocCommand());
+$application->add(new \CakePhp2IdeHelper\Command\GenerateShellDocCommand());
 $application->run();
