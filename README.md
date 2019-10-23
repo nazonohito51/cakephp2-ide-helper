@@ -29,12 +29,26 @@ Generate `_ide_helper.php`. [see sample](https://github.com/nazonohito51/cakephp
 
 ### `generate:model`
 ```shell script
-path/to/your/vendor/bin/cakephp2-ide-helper generate:model --app-dir=./app --git-root=./
+path/to/your/vendor/bin/cakephp2-ide-helper generate:controller --app-dir=./app --git-root=./
 ```
 
 Update phpdoc of models, for code complement of behavior methods.
 If there is duplicate models, this command will be failed.
 When this case, you need `--ignore` options.
+
+### `generate:controller`
+```shell script
+path/to/your/vendor/bin/cakephp2-ide-helper generate:controller --app-dir=./app --git-root=./
+```
+
+Update phpdoc of controller.
+
+### `generate:shell`
+```shell script
+path/to/your/vendor/bin/cakephp2-ide-helper generate:shell --app-dir=./app --git-root=./
+```
+
+Update phpdoc of shell.
 
 ```shell script
 path/to/your/vendor/bin/cakephp2-ide-helper generate:model --app-dir=./app --git-root=./ --ignore=Model/SomeDuplicateClass.php

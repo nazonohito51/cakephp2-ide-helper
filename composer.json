@@ -2,6 +2,7 @@
     "name": "nazonohito51/cakephp2-ide-helper",
     "description": "Improve auto-completion for cakephp2",
     "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "nazonohito51",

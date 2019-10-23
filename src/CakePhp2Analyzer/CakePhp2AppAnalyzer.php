@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace CakePhp2IdeHelper\CakePhp2Analyzer;
 
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ControllerReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\FixtureReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\PhpFileReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ShellReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements\CakePhp2App;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use PhpParser\Node\Expr\MethodCall;
@@ -16,6 +18,8 @@ class CakePhp2AppAnalyzer
     private $modelReaders;
     private $behaviorReaders;
     private $fixtureReaders;
+    private $controllerReaders;
+    private $shellReaders;
     private $modelExtendsGraph;
     private $behaviorExtendsGraph;
 
@@ -87,6 +91,40 @@ class CakePhp2AppAnalyzer
     }
 
     /**
+     * @return ControllerReader[]
+     */
+    public function getControllerReaders(): array
+    {
+        if (!is_null($this->controllerReaders)) {
+            return $this->controllerReaders;
+        }
+
+        $controllerReaders = $this->app->getControllerReaders();
+        foreach ($this->app->getPlugins() as $plugin) {
+            $controllerReaders = array_merge($controllerReaders, $plugin->getControllerReaders());
+        }
+
+        return $this->controllerReaders = $controllerReaders;
+    }
+
+    /**
+     * @return ShellReader[]
+     */
+    public function getShellReaders(): array
+    {
+        if (!is_null($this->shellReaders)) {
+            return $this->shellReaders;
+        }
+
+        $shellReaders = $this->app->getShellReaders();
+        foreach ($this->app->getPlugins() as $plugin) {
+            $shellReaders = array_merge($shellReaders, $plugin->getShellReaders());
+        }
+
+        return $this->shellReaders = $shellReaders;
+    }
+
+    /**
      * @return MethodCall[]
      */
     public function searchUnloadMethod(): array
@@ -150,6 +188,17 @@ class CakePhp2AppAnalyzer
         }
 
         return $this->modelExtendsGraph = $graph;
+    }
+
+    public function searchModelFromSymbol(string $modelSymbol): ?ModelReader
+    {
+        foreach ($this->getModelReaders() as $modelReader) {
+            if ($modelReader->getSymbol() === $modelSymbol) {
+                return $modelReader;
+            }
+        }
+
+        return null;
     }
 
     public function getBehaviorExtendsGraph(): BehaviorExtendsGraph

@@ -8,19 +8,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateModelDocCommand extends AbstractIdeHelperCommand
+class GenerateControllerDocCommand extends AbstractIdeHelperCommand
 {
     private $ignoreGit = false;
     private $gitManagedFiles = [];
 
     protected function getCommandName(): string
     {
-        return 'generate:model';
+        return 'generate:controller';
     }
 
     protected function getCommandDescription(): string
     {
-        return 'generate model phpdoc';
+        return 'generate controller phpdoc';
     }
 
     protected function configure(): void
@@ -64,20 +64,11 @@ class GenerateModelDocCommand extends AbstractIdeHelperCommand
 
     protected function generateFromGenerator(Generator $generator, OutputInterface $output): int
     {
-        $updateModelDocEntries = $generator->generateModelDocEntries();
-        $modelNum =  count($updateModelDocEntries);
-        $output->writeln('Update target: ' . $modelNum);
-
-        $cnt = 0;
-        foreach ($updateModelDocEntries as $updateModelDocEntry) {
-            $output->writeln("Update({$cnt}/{$modelNum}): {$updateModelDocEntry->getModelPath()}");
-            if ($this->ignoreGit || in_array($updateModelDocEntry->getModelPath(), $this->gitManagedFiles, true)) {
-                $updateModelDocEntry->update();
+        foreach ($generator->generateControllerDocEntries() as $updateControllerDocEntry) {
+            if ($this->ignoreGit || in_array($updateControllerDocEntry->getControllerPath(), $this->gitManagedFiles, true)) {
+                $updateControllerDocEntry->update();
             }
-            $cnt++;
         }
-
-        $output->writeln('Done.');
 
         return 0;
     }

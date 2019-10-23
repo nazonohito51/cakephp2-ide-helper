@@ -6,28 +6,28 @@ namespace CakePhp2IdeHelper\PhpStormMeta;
 use Barryvdh\Reflection\DocBlock;
 use Barryvdh\Reflection\DocBlock\Serializer as DocBlockSerializer;
 use Barryvdh\Reflection\DocBlock\Tag;
-use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ControllerReader;
 use CakePhp2IdeHelper\Exception\FailedUpdatingPhpDocException;
 
-class UpdateModelDocEntry
+class UpdateControllerDocEntry
 {
-    private $modelReader;
+    private $controllerReader;
     private $replaceDoc;
     private $serializer;
-    public $haveUpdate = false;
+    private $haveUpdate = false;
 
-    public function __construct(ModelReader $modelReader)
+    public function __construct(ControllerReader $controllerReader)
     {
-        $this->modelReader = $modelReader;
+        $this->controllerReader = $controllerReader;
 
-        $originalDocComment = $modelReader->getPhpDoc() ?? '';
+        $originalDocComment = $controllerReader->getPhpDoc() ?? '';
         $this->replaceDoc = new DocBlock($originalDocComment);
         $this->serializer = new DocBlockSerializer();
     }
 
-    public function getModelPath(): string
+    public function getControllerPath(): string
     {
-        return $this->modelReader->getRealPath();
+        return $this->controllerReader->getRealPath();
     }
 
     public function appendTagWhenNotExist(string $tagString): void
@@ -47,12 +47,12 @@ class UpdateModelDocEntry
         }
     }
 
-    public function getReplaceDocComment(): string
+    private function getReplaceDocComment(): string
     {
         return $this->serializer->getDocComment($this->replaceDoc);
     }
 
-    public function getReplaceModelContent(): string
+    public function getReplaceControllerContent(): string
     {
         $replaceDocComment = $this->getReplaceDocComment();
         if (empty($this->replaceDoc->getShortDescription()) && empty($this->replaceDoc->getLongDescription()->getContents())) {
@@ -60,15 +60,15 @@ class UpdateModelDocEntry
             $replaceDocComment = str_replace("/**\n * \n *", '/**', $replaceDocComment);
         }
 
-        $originalContent = $this->modelReader->getContent();
-        if (!empty($originalDocComment = $this->modelReader->getPhpDoc())) {
+        $originalContent = $this->controllerReader->getContent();
+        if (!empty($originalDocComment = $this->controllerReader->getPhpDoc())) {
             $replacedContents = str_replace($originalDocComment, $replaceDocComment, $originalContent);
         } else {
-            $needle = "class {$this->modelReader->getModelName()}";
-            $replace = "{$replaceDocComment}\nclass {$this->modelReader->getModelName()}";
+            $needle = "class {$this->controllerReader->getControllerName()}";
+            $replace = "{$replaceDocComment}\nclass {$this->controllerReader->getControllerName()}";
             $pos = strpos($originalContent, $needle);
             if ($pos === false) {
-                throw new FailedUpdatingPhpDocException($this->getModelPath());
+                throw new FailedUpdatingPhpDocException($this->getControllerPath());
             }
             $replacedContents = substr_replace($originalContent, $replace, $pos, strlen($needle));
         }
@@ -84,8 +84,8 @@ class UpdateModelDocEntry
     public function update(): void
     {
         if (!$this->phpDocIsEmpty() && $this->haveUpdate) {
-            $replacedContent = $this->getReplaceModelContent();
-            $file = new \SplFileObject($this->getModelPath(), 'w');
+            $replacedContent = $this->getReplaceControllerContent();
+            $file = new \SplFileObject($this->getControllerPath(), 'w');
             $file->fwrite($replacedContent);
         }
     }

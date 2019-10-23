@@ -4,9 +4,11 @@ declare(strict_types=1);
 namespace CakePhp2IdeHelper\CakePhp2Analyzer\StructuralElements;
 
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\BehaviorReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ControllerReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\FixtureReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ModelReader;
 use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\PhpFileReader;
+use CakePhp2IdeHelper\CakePhp2Analyzer\Readers\ShellReader;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 
@@ -25,6 +27,16 @@ abstract class CakePhp2Dir
     /**
      * @var string[]
      */
+    protected $controllerDirs = [];
+
+    /**
+     * @var string[]
+     */
+    protected $shellDirs = [];
+
+    /**
+     * @var string[]
+     */
     private $ignoreFiles = [];
 
     public function __construct(string $appDir)
@@ -35,6 +47,8 @@ abstract class CakePhp2Dir
 
         $this->appDir = $appDir;
         $this->modelDirs[] = $this->getModelDirPath();
+        $this->controllerDirs[] = $this->getControllerDirPath();
+        $this->shellDirs[] = $this->getShellDirPath();
     }
 
     public function addIgnoreFile(string $ignoreFile): void
@@ -72,6 +86,16 @@ abstract class CakePhp2Dir
         return $this->appDir . '/Test/Fixture';
     }
 
+    protected function getControllerDirPath(): string
+    {
+        return $this->appDir . '/Controller';
+    }
+
+    protected function getShellDirPath(): string
+    {
+        return $this->appDir . '/Console/Command';
+    }
+
     public function addModelDir(string $modelDir): void
     {
         $modelDir = realpath($modelDir);
@@ -80,6 +104,26 @@ abstract class CakePhp2Dir
         }
 
         $this->modelDirs[] = $modelDir;
+    }
+
+    public function addControllerDir(string $controllerDir): void
+    {
+        $controllerDir = realpath($controllerDir);
+        if (!is_dir($controllerDir)) {
+            throw new \InvalidArgumentException('controller dir is invalid:' . $controllerDir);
+        }
+
+        $this->controllerDirs[] = $controllerDir;
+    }
+
+    public function addShellDir(string $shellDir): void
+    {
+        $shellDir = realpath($shellDir);
+        if (!is_dir($shellDir)) {
+            throw new \InvalidArgumentException('shell dir is invalid:' . $shellDir);
+        }
+
+        $this->shellDirs[] = $shellDir;
     }
 
     /**
@@ -165,6 +209,60 @@ abstract class CakePhp2Dir
         }
 
         return $fixtureReaders;
+    }
+
+    protected function getControllerFiles(): array
+    {
+        $ret = [];
+        foreach ($this->controllerDirs as $controllerDir) {
+            foreach (glob($controllerDir . '/*.php') as $path) {
+                if (!$this->isIgnoreFile($path)) {
+                    $ret[] = $path;
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @return ControllerReader[]
+     */
+    public function getControllerReaders(): array
+    {
+        $controllerReaders = [];
+        foreach ($this->getControllerFiles() as $controllerFile) {
+            $controllerReaders[] = new ControllerReader($controllerFile);
+        }
+
+        return $controllerReaders;
+    }
+
+    protected function getShellFiles(): array
+    {
+        $ret = [];
+        foreach ($this->shellDirs as $shellDir) {
+            foreach (glob($shellDir . '/*.php') as $path) {
+                if (!$this->isIgnoreFile($path)) {
+                    $ret[] = $path;
+                }
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @return ShellReader[]
+     */
+    public function getShellReaders(): array
+    {
+        $shellReaders = [];
+        foreach ($this->getShellFiles() as $shellFile) {
+            $shellReaders[] = new ShellReader($shellFile);
+        }
+
+        return $shellReaders;
     }
 
     public function getPhpFiles()
