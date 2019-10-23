@@ -36,7 +36,7 @@ class UpdateControllerDocEntry
 
         $exist = false;
         foreach ($this->replaceDoc->getTags() as $existTag) {
-            if ($existTag->__toString() === $tag->__toString()) {
+            if ($existTag->__toString() === $tag->__toString() || $existTag->__toString() === $tagString) {
                 $exist = true;
                 break;
             }

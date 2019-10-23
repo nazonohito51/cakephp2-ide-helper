@@ -18,12 +18,16 @@ class ExpectArgumentsEntry
 
     public function add(string $arg): void
     {
-        $this->expectArgs[] = $arg;
+        if (!in_array($arg, $this->expectArgs)) {
+            $this->expectArgs[] = $arg;
+        }
     }
 
     public function addAsString(string $arg): void
     {
-        $this->expectArgsAsString[] = $arg;
+        if (!in_array($arg, $this->expectArgsAsString)) {
+            $this->expectArgsAsString[] = $arg;
+        }
     }
 
     public function getTarget(): string
