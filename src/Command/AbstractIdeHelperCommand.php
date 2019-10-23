@@ -14,7 +14,7 @@ abstract class AbstractIdeHelperCommand extends Command
 {
     abstract protected function getCommandName(): string;
     abstract protected function getCommandDescription(): string;
-    abstract protected function generateFromGenerator(Generator $generator): int;
+    abstract protected function generateFromGenerator(Generator $generator, OutputInterface $output): int;
 
     protected function configure(): void
     {
@@ -24,6 +24,7 @@ abstract class AbstractIdeHelperCommand extends Command
                 new InputOption('app-dir', null, InputOption::VALUE_REQUIRED, 'CakePHP2 app dir path'),
                 new InputOption('model-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional model dir', []),
                 new InputOption('controller-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional controller dir', []),
+                new InputOption('shell-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional shell dir', []),
                 new InputOption('behavior-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional behavior dir', []),
                 new InputOption('plugin-dir', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Additional plugin dir', []),
                 new InputOption('ignore', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Ignore file', []),
@@ -41,6 +42,9 @@ abstract class AbstractIdeHelperCommand extends Command
         }
         foreach ($input->getOption('controller-dir') as $controllerDir) {
             $app->addControllerDir($controllerDir);
+        }
+        foreach ($input->getOption('shell-dir') as $shellDir) {
+            $app->addShellDir($shellDir);
         }
         foreach ($input->getOption('behavior-dir') as $behaviorDir) {
             $app->addBehaviorDir($behaviorDir);
@@ -67,7 +71,7 @@ abstract class AbstractIdeHelperCommand extends Command
         }
 
         try {
-            return $this->generateFromGenerator($this->createGenerator($input));
+            return $this->generateFromGenerator($this->createGenerator($input), $output);
         } catch (\Exception $e) {
             var_dump($e);
         }

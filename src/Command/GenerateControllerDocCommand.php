@@ -62,7 +62,7 @@ class GenerateControllerDocCommand extends AbstractIdeHelperCommand
         return parent::execute($input, $output);
     }
 
-    protected function generateFromGenerator(Generator $generator): int
+    protected function generateFromGenerator(Generator $generator, OutputInterface $output): int
     {
         foreach ($generator->generateControllerDocEntries() as $updateControllerDocEntry) {
             if ($this->ignoreGit || in_array($updateControllerDocEntry->getControllerPath(), $this->gitManagedFiles, true)) {

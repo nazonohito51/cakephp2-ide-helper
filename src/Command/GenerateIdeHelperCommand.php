@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace CakePhp2IdeHelper\Command;
 
 use CakePhp2IdeHelper\Generator;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateIdeHelperCommand extends AbstractIdeHelperCommand
 {
@@ -17,7 +18,7 @@ class GenerateIdeHelperCommand extends AbstractIdeHelperCommand
         return 'generate _ide_helper.php';
     }
 
-    protected function generateFromGenerator(Generator $generator): int
+    protected function generateFromGenerator(Generator $generator, OutputInterface $output): int
     {
         $ideHelperContent = $generator->generateIdeHelperContent();
 

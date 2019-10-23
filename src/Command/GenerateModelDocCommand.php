@@ -62,13 +62,22 @@ class GenerateModelDocCommand extends AbstractIdeHelperCommand
         return parent::execute($input, $output);
     }
 
-    protected function generateFromGenerator(Generator $generator): int
+    protected function generateFromGenerator(Generator $generator, OutputInterface $output): int
     {
-        foreach ($generator->generateModelDocEntries() as $updateModelDocEntry) {
+        $updateModelDocEntries = $generator->generateModelDocEntries();
+        $modelNum =  count($updateModelDocEntries);
+        $output->writeln('Update target: ' . $modelNum);
+
+        $cnt = 0;
+        foreach ($updateModelDocEntries as $updateModelDocEntry) {
+            $output->writeln("Update({$cnt}/{$modelNum}): {$updateModelDocEntry->getModelPath()}");
             if ($this->ignoreGit || in_array($updateModelDocEntry->getModelPath(), $this->gitManagedFiles, true)) {
                 $updateModelDocEntry->update();
             }
+            $cnt++;
         }
+
+        $output->writeln('Done.');
 
         return 0;
     }
