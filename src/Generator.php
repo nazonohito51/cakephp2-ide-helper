@@ -15,6 +15,7 @@ use CakePhp2IdeHelper\PhpStormMeta\IdeHelperDeprecateClassEntry;
 use CakePhp2IdeHelper\PhpStormMeta\OverRideEntry;
 use CakePhp2IdeHelper\PhpStormMeta\UpdateControllerDocEntry;
 use CakePhp2IdeHelper\PhpStormMeta\UpdateModelDocEntry;
+use CakePhp2IdeHelper\PhpStormMeta\UpdateShellDocEntry;
 
 class Generator
 {
@@ -225,6 +226,32 @@ class Generator
                     }
                 }
                 $controllerReader->flush();
+
+                $entries[] = $entry;
+            } catch (\PhpParser\Error $e) {
+                // TODO: error handling
+            }
+        }
+
+        return $entries;
+    }
+
+    /**
+     * @return UpdateShellDocEntry[]
+     */
+    public function generateShellDocEntries(): array
+    {
+        $entries = [];
+        foreach ($this->analyzer->getShellReaders() as $shellReader) {
+            try {
+                $entry = new UpdateShellDocEntry($shellReader);
+
+                foreach ($shellReader->getUseModelSymbols() as $modelSymbol) {
+                    if (!is_null($modelReader = $this->analyzer->searchModelFromSymbol($modelSymbol))) {
+                        $entry->appendTagWhenNotExist("@property {$modelReader->getModelName()} \${$modelReader->getModelName()}");
+                    }
+                }
+                $shellReader->flush();
 
                 $entries[] = $entry;
             } catch (\PhpParser\Error $e) {

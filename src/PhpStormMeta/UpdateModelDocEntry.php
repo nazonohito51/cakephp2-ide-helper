@@ -14,7 +14,7 @@ class UpdateModelDocEntry
     private $modelReader;
     private $replaceDoc;
     private $serializer;
-    private $haveUpdate = false;
+    public $haveUpdate = false;
 
     public function __construct(ModelReader $modelReader)
     {
