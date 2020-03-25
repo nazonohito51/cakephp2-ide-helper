@@ -2,6 +2,8 @@
 <?php
 declare(strict_types=1);
 
+ini_set('memory_limit', '-1');
+
 $autoloaderPaths = ['/vendor/autoload.php', '/Vendor/autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/../Vendor/autoload.php', __DIR__ . '/../../../autoload.php'];
 foreach ($autoloaderPaths as $autoloaderPath) {
     if (is_file($autoloaderPath)) {
