@@ -6,7 +6,9 @@ namespace CakePhp2IdeHelper\PhpStormMeta;
 use PhpParser\Builder\Class_;
 use PhpParser\BuilderFactory;
 use PhpParser\Comment\Doc;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\ClassMethod;
+use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Return_;
 
 class IdeHelperClassEntry
@@ -67,22 +69,33 @@ class IdeHelperClassEntry
             // remove first argument
             $firstArg = array_shift($classMethod->params);
 
+            // remove method body
+            $classMethod->stmts = [];
+
             $variable = $builderFactory->var('behavior');
+
+            // create method call statement for call original behavior method
             $methodCall = $builderFactory->methodCall($variable, $classMethod->name->toString(), []);
             $methodCall->args[] = $firstArg->var;
             foreach ($classMethod->params as $param) {
                 $methodCall->args[] = $param->var;
             }
-            $returnStmt = new Return_($methodCall);
-            $returnStmt->setDocComment(new Doc("/**
-            * @var \\{$this->getClassName()} \$behavior
-            * @var \\Model \${$firstArg->var->name}
-            */"));
+            if ($classMethod->getReturnType() instanceof Identifier && $classMethod->getReturnType()->toLowerString() === 'void') {
+                // void method must not return
+                $newStatement = new Expression($methodCall);
+            } else {
+                $newStatement = new Return_($methodCall);
+            }
 
-            // remove method body
-            $classMethod->stmts = [];
-
-            $classMethod->stmts[] = $returnStmt;
+            $newStatement->setDocComment(
+                new Doc(
+                    "/**
+                        * @var \\{$this->getClassName()} \$behavior
+                        * @var \\Model \${$firstArg->var->name}
+                        */"
+                )
+            );
+            $classMethod->stmts[] = $newStatement;
 
             $classStmt->addStmt($classMethod);
         }

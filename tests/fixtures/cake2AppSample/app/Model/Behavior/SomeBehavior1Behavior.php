@@ -17,6 +17,11 @@ class SomeBehavior1Behavior extends ModelBehavior
         return 'str';
     }
 
+    public function someBehavior1Method4(Model $Model, string $arg1, string $args2): void
+    {
+        $test = 1 + 1;
+    }
+
     public function setup(Model $model, $config = array())
     {
     }
