@@ -25,7 +25,7 @@ class BehaviorReaderTest extends TestCase
 
         $publicMethods = $behaviorReader->getPublicMethods();
 
-        $this->assertSame(['someBehavior1Method1', 'someBehavior1Method2', 'someBehavior1Method3'], array_map(function (ClassMethod $classMethod) {
+        $this->assertSame(['someBehavior1Method1', 'someBehavior1Method2', 'someBehavior1Method3', 'someBehavior1Method4'], array_map(function (ClassMethod $classMethod) {
             return $classMethod->name->toString();
         }, $publicMethods));
     }

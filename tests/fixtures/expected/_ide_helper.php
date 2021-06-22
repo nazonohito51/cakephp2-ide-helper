@@ -29,6 +29,14 @@ class SomeBehavior1Behavior
          */
         return $behavior->someBehavior1Method3($Model, $arg1, $args2);
     }
+    public function someBehavior1Method4(string $arg1, string $args2) : void
+    {
+        /**
+         * @var \SomeBehavior1Behavior $behavior
+         * @var \Model $Model
+         */
+        $behavior->someBehavior1Method4($Model, $arg1, $args2);
+    }
 }
 class DeprecateSomeBehavior1Behavior
 {
@@ -48,6 +56,12 @@ class DeprecateSomeBehavior1Behavior
      * @deprecated
      */
     public function someBehavior1Method3(string $arg1, string $args2) : string
+    {
+    }
+    /**
+     * @deprecated
+     */
+    public function someBehavior1Method4(string $arg1, string $args2) : void
     {
     }
 }
